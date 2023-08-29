@@ -1,5 +1,7 @@
 # OnlineMeetingSchedule
 Programming Web Application
+[![build status for OnlineMeetingSchedule](https://github.com/mosmar99/OnlineMeetingSchedule/actions/workflows/build.yml/badge.svg)](https://github.com/mosmar99/OnlineMeetingSchedule/actions/workflows/build.yml)
+
 
 ## Collaborators
 * Mahmut Osmanovic (mosmar99)
