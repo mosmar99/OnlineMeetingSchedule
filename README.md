@@ -8,5 +8,5 @@
 * Emil Wagman (Neobyte01)
 
 ## Project Description
-An Online service through which you can schedule a meeting. Implemented using the MERN stack. <br/>
+An Online service through which you can schedule a meeting. Implemented using the **MERN** stack. <br/>
 The Project is a part of the Programming Course "Programming Web Applications" (TWUN13 T3180) at JU. <br/> 
