@@ -1,6 +1,7 @@
 # OnlineMeetingSchedule
-Programming Web Application <br/>
 [![build status for OnlineMeetingSchedule](https://github.com/mosmar99/OnlineMeetingSchedule/actions/workflows/build.yml/badge.svg)](https://github.com/mosmar99/OnlineMeetingSchedule/actions/workflows/build.yml)
+
+<br/> Programming Web Application <br/>
 
 
 ## Collaborators

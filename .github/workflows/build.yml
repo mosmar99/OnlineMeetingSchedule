@@ -1,4 +1,5 @@
 name: OnlineMeetingSchedule
+run-name: build
 
 on: [push]
 
