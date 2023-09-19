@@ -11,7 +11,9 @@ module.exports = {
         path: path.resolve(__dirname, "deploy"),
     },
     devServer: {
-        open: true
+        open: true,
+        port: 3000,
+        historyApiFallback: true
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -34,6 +36,7 @@ module.exports = {
                 test: /\.(?:ico|gif|png|jpg|jpeg)$/i,
                 type: "asset/resource"
             }
+            
          ],
     }
 };
