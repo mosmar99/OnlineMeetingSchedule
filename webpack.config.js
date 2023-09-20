@@ -18,11 +18,12 @@ module.exports = (_, argv) => {
         output: {
             filename: "[name].bundle.js",
             path: path.resolve(__dirname, "deploy"),
+            publicPath: '/',
         },
         devServer: {
             open: true,
             port: 3000,
-            historyApiFallback: true
+            historyApiFallback: true,
         },
         plugins: [
             new HtmlWebpackPlugin({
