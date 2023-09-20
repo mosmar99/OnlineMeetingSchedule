@@ -5,18 +5,29 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import NewMeet from "./pages/NewMeet";
+import Calendar from "./pages/Calendar";
+import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
+
+// components
+import MuiNavbar from "./components/MuiNavbar";
+import Features from "./components/Features";
 
 export const App = () => {
     return (
-        <BrowserRouter>
-            <Routes>
-                <Route path='/' element={<Home />} />
-                <Route path='/about' element={<About />} />
-                <Route path='/newMeet' element={<NewMeet/>}/>
-                <Route path='/calendar' element={<Calendar/>}/>
-                <Route path='/Login' element={<Login/>}/>
-                <Route path='/SignUp' element={<SignUp/>}/>
-            </Routes>
-        </BrowserRouter>
+        <div className="app">
+            <MuiNavbar />
+            <BrowserRouter>
+                <Routes>
+                    <Route path='/' element={<Home />} />
+                    <Route path='/features' element={<Features />} />
+                    <Route path='/about' element={<About />} />
+                    <Route path='/newMeet' element={<NewMeet/>}/>
+                    <Route path='/calendar' element={<Calendar/>}/>
+                    <Route path='/login' element={<Login/>}/>
+                    <Route path='/signUp' element={<SignUp/>}/>
+                </Routes>
+            </BrowserRouter>
+        </div>
     )
 }
