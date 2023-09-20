@@ -12,6 +12,7 @@ import SignUp from "./pages/SignUp";
 // components
 import MuiNavbar from "./components/MuiNavbar";
 import Features from "./components/Features";
+import NotFound from "./components/NotFound";
 
 export const App = () => {
     return (
@@ -26,6 +27,7 @@ export const App = () => {
                     <Route path='/calendar' element={<Calendar/>}/>
                     <Route path='/login' element={<Login/>}/>
                     <Route path='/signUp' element={<SignUp/>}/>
+                    <Route path="*" element={<NotFound />}/>
                 </Routes>
             </BrowserRouter>
         </div>
