@@ -17,6 +17,7 @@ export default function Home() {
                 tincidunt volutpat, dui tortor pharetra felis, ut ornare felis dui commodo ligula.
                 Suspendisse ac velit sed orci tincidunt ornare eu vel mauris.</p>
                 <Link to="/about">test</Link>
+                <Link to="/newMeet">newmeeting</Link>
         </div>
     )
 }
