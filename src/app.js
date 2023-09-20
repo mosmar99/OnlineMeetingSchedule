@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 
 // pages
 import Home from "./pages/Home";
+import Support from "./components/Support";
 import About from "./pages/About";
 import NewMeet from "./pages/NewMeet";
 import Calendar from "./pages/Calendar";
@@ -22,6 +23,7 @@ export const App = () => {
                 <Routes>
                     <Route path='/' element={<Home />} />
                     <Route path='/features' element={<Features />} />
+                    <Route path='/support' element={<Support />} />
                     <Route path='/about' element={<About />} />
                     <Route path='/newMeet' element={<NewMeet/>}/>
                     <Route path='/calendar' element={<Calendar/>}/>
