@@ -7,13 +7,10 @@ const path = require("path");
 module.exports = (_, argv) => {
     let public_url = argv.mode === "development" ? "file:/"+path.resolve(__dirname, "public") : "<future-url>"
 
-    console.log("PUBLIC_URL:", public_url);
-    console.log("MODE:", argv.mode);
-    console.log("")  // console linebreak
-
     const config = {
+        stats: 'errors-only',
         entry: {
-            main: path.resolve(__dirname, "./src/index.js")
+            main: path.resolve(__dirname, "./client/index.js")
         },
         output: {
             filename: "[name].bundle.js",
