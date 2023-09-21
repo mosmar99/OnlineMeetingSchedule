@@ -6,7 +6,6 @@ import Home from "./pages/Home";
 import Support from "./components/Support";
 import About from "./pages/About";
 import NewMeet from "./pages/NewMeet";
-import Calendar from "./pages/Calendar";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 
