@@ -10,7 +10,7 @@ const MuiNavbar = () => {
 
             {/* Centered links */}
             <Grid item xs={12} md={12} >
-                <Grid container justifyContent="center">
+                <Grid container justifyContent="center" alignItems="center">
                 {/* Add media query to hide centered links on smaller screens */}
                 <style>
                 {`
