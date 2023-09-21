@@ -1,5 +1,5 @@
 import "./app.css";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // pages
 import Home from "./pages/Home";
@@ -9,6 +9,7 @@ import NewMeet from "./pages/NewMeet";
 import Calendar from "./pages/Calendar";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import Calendar from "./pages/Calendar";
 
 // components
 import MuiNavbar from "./components/MuiNavbar";
@@ -33,6 +34,5 @@ export const App = () => {
                 </Routes>
             </BrowserRouter>
         </div>
-
     )
 }
