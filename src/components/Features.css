@@ -1,0 +1,37 @@
+/* features.css */
+
+/* Styles for the entire features section */
+.features {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+  
+/* Styles for individual features */
+.feature {
+    text-align: center;
+    padding: 20px;
+    flex: 1;
+}
+  
+.feature i {
+    font-size: 36px;
+    color: #007bff;
+    margin-bottom: 10px;
+}
+  
+.feature h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.feature p {
+    font-size: 14px;
+    color: #555;
+}

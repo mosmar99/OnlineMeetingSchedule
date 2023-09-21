@@ -7,28 +7,9 @@ const MuiNavbar = () => {
       <AppBar position="relative">
         <Toolbar sx={{ bgcolor: '#fff9c6' }}>
           <Grid container alignItems="center">
-            {/* Left side of the AppBar */}
-            <Grid item xs={1} md={1}>
-              <Typography
-                variant="h6"
-                noWrap
-                component="a"
-                href="/"
-                className="typography-left"
-                sx={{
-                  fontWeight: 900,
-                  color: 'common.black',
-                  textDecoration: 'none',
-                  fonntFamily: 'Helvetica',
-                  marginLeft: '30%',
-                }}
-              >
-                Meetings
-              </Typography>
-            </Grid>
 
             {/* Centered links */}
-            <Grid item xs={3} md={8} >
+            <Grid item xs={12} md={12} >
                 <Grid container justifyContent="center">
                 {/* Add media query to hide centered links on smaller screens */}
                 <style>
@@ -40,6 +21,23 @@ const MuiNavbar = () => {
                   }
                 `}
                 </style>
+
+                <Typography
+                variant="h6"
+                noWrap
+                component="a"
+                href="/"
+                className="typography-left"
+                sx={{
+                  fontWeight: 900,
+                  color: 'common.black',
+                  textDecoration: 'none',
+                  fonntFamily: 'Helvetica',
+                  marginRight: '3%',
+                }}
+              >
+                Meetings
+              </Typography>
 
                 <div className="centered-links">
                     <Typography
@@ -122,14 +120,8 @@ const MuiNavbar = () => {
                         About
                     </Typography>
                     </div>
-                </Grid>
-            </Grid>
 
-
-            {/* Right side of the AppBar */}
-            <Grid item xs={8} md={3}>
-              <Grid container justifyContent="flex-end">
-                <Typography
+                    <Typography
                   variant="h6"
                   noWrap
                   component="a"
@@ -139,13 +131,16 @@ const MuiNavbar = () => {
                     color: 'common.white',
                     backgroundColor: 'common.black',
                     textDecoration: 'none',
-                    marginLeft: 'auto',
+                    marginLeft: '5px',
                     display: 'inline-block',
                     border: '1px solid black',
                     padding: '12px',
-                    borderRadius: '15px',
+                    borderRadius: '25px',
                     fontSize: '14px',
                     fontFamily: 'Roboto',
+                    width: '100px',
+                    textAlign: 'center',
+                    marginLeft: '6vw',
                   }}
                 >
                   Sign up
@@ -164,16 +159,17 @@ const MuiNavbar = () => {
                     display: 'inline-block',
                     border: '1.5px solid black',
                     padding: '12px',
-                    borderRadius: '15px',
+                    borderRadius: '25px',
                     fontSize: '14px',
                     fontFamily: 'Roboto',
+                    width: '100px',
+                    textAlign: 'center',
                   }}
                 >
                   Login
                 </Typography>
-              </Grid>
+                </Grid>
             </Grid>
-
 
           </Grid>
         </Toolbar>
