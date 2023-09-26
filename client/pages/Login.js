@@ -1,22 +1,26 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { TextField } from '@mui/material';
+import { TextField, Box, Stack, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import axios from "axios";
-import "./Login.css";
+import bgImage from "../../public/tilebg.svg";
 
 const Login = ({ setUser }) => {
     const navigate = useNavigate();
 
-    const [email, setEmail]   = useState("");
-    const [password, setPassword] = useState(""); 
+    const [formInput, setformInput] = useState({email: "", password: ""});
     
+    const handleChange = (e) => {
+        setformInput({
+            ...formInput,
+            [e.target.name]: e.target.value
+        });
+    }
+
     const handleSubmit = e =>{
         e.preventDefault();
-    
-        let data = { email, password};
 
-        axios.post("/api/users/login", data)
+        axios.post("/api/users/login", formInput)
             .then(res => {
                 setUser(res.data);
                 navigate("/calendar");
@@ -27,36 +31,41 @@ const Login = ({ setUser }) => {
     }
 
     return ( 
-        <div className="login">
-            <div className="login-form-container">
-                <h1 id='login-form-header'>Sign in</h1>
-                <form onSubmit={handleSubmit}>
-                    <TextField 
-                        className="signUp-textfield" 
+        <Box align={"center"} 
+                sx={{   backgroundColor:'#fffcc4',
+                        backgroundImage: `url(${bgImage})`,
+                        backgroundPosition: 'top',
+                        height: '100vh'}}>
+
+            <Stack spacing={2} width={"30%"} sx={{  backgroundColor: '#ffffff',
+                                                    padding: '100px',
+                                                    height: '100vh',
+                                                    borderWidth: "0 5px",
+                                                    borderStyle: "solid",
+                                                    borderColor: "#ffc64d"}}>
+
+                <Typography variant="h3" align="center">Sign in</Typography>
+                    <TextField
+                        name="email"
                         variant="outlined" 
                         required 
                         label="Email"
-                        margin="dense" 
-                        fullWidth="true" 
-                        onChange={e => setEmail(e.target.value)}
-                        value={email}
+                        onChange={handleChange}
+                        value={formInput.email}
                     />
                     <TextField 
-                        className="signUp-textfield" 
+                        name="password"
                         variant="outlined" 
                         required 
                         label="Password"
-                        margin="dense" 
-                        fullWidth="true" 
                         type="password"
-                        onChange={e => setPassword(e.target.value)}
-                        value={password}
+                        onChange={handleChange}
+                        value={formInput.password}
                     />
-                    <Button variant='contained' id="login-page-button" type="submit">Sign in</Button>
-                </form>
-                <Link id="login-form-signup-link" to="/signup">No account? Sign up</Link>
-            </div>
-        </div>
+                <Button variant='contained' onClick={handleSubmit}>Sign in</Button>
+                <Link fontSize={"20px"} to="/login" align="center">No accout? Sign up</Link>
+            </Stack>
+        </Box>
     );
 }
  
