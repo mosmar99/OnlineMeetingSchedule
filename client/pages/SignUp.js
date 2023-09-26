@@ -7,7 +7,7 @@ import bgImage from "../../public/tilebg.svg";
 const SignUp = ({ setUser }) => {
     const navigate = useNavigate();
 
-    const [formInput, setformInput] = useState({username: "", email: "", password1: ""});
+    const [formInput, setformInput] = useState({username: "", email: "", password: ""});
     const [password2, setPassword2] = useState(""); 
     
     const [usernameError, setUsernameError] = useState(false)
@@ -24,11 +24,11 @@ const SignUp = ({ setUser }) => {
     const handleSubmit = e =>{
         e.preventDefault();
 
-        let error = (!formInput.username || !formInput.email || (!formInput.password1 || formInput.password1 !== password2))
+        let error = (!formInput.username || !formInput.email || (!formInput.password || formInput.password !== password2))
 
         setUsernameError(!formInput.username);
         setEmailError(!formInput.email);
-        setPasswordError(!formInput.password1 || formInput.password1 !== password2);
+        setPasswordError(!formInput.password || formInput.password !== password2);
 
         if (error) return;
 
@@ -76,13 +76,13 @@ const SignUp = ({ setUser }) => {
                         error={emailError}
                     />
                     <TextField 
-                        name="password1"
+                        name="password"
                         variant="outlined" 
                         required 
                         label="Password"
                         type="password"
                         onChange={handleChange}
-                        value={formInput.password1}
+                        value={formInput.password}
                         error={passwordError}
                     />
                     <TextField 
