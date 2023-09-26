@@ -15,6 +15,8 @@ if (process.argv[2] === "development") {
     });
 }
 
+app.use(express.json());
+
 app.use("/", routes);
 
 app.listen(port, () => console.log(`Express server listening on port ${port}!`))
