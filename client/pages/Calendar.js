@@ -3,6 +3,7 @@ import useFetch from "../utils/useFetch";
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Grid, List, ListItem, ListItemText, Button } from '@mui/material';
+import NewMeet from "./NewMeet";
 
 const dayNames = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 const monthNames = ["January", "Feburary", "Mars", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
@@ -90,7 +91,7 @@ const Calendar = () => {
                         </ListItem>
                     ))}
                 </List>
-                <Button component={Link} to="/newMeet" style={{ margin: "30px 0 5px 15px"}}>+ New meeting</Button> 
+                <NewMeet></NewMeet>
             </Grid>
             <Grid item xs={9} padding={2}>
                 <div>

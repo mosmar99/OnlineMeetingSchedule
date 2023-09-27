@@ -8,6 +8,7 @@ import About from "./pages/About";
 import NewMeet from "./pages/NewMeet";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import Calendar from "./pages/Calendar";
 
 // components
 import MuiNavbar from "./components/MuiNavbar";

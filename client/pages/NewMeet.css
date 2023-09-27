@@ -1,22 +1,3 @@
-.newMeet{
-    text-align: center;
-    padding-top: 5%;
-    background-color: #fffcc4;
-    height: 100vh;
-}
-
-.newMeet-form-container{
-    width: 25%;
-    display: inline-block;
-    text-align: left;
-    border:black;
-    border-style: solid;
-    padding: 25px;
-    border-radius: 20px;
-    padding-top: 0px;
-    background-color: white;
-}
-
 #newMeet-button{
     margin-top: 10px;
     background-color: yellow;
@@ -28,4 +9,18 @@
 
 #newMeet-h1{
     color: black;
+    float: left;
+    display: inline;
+}
+
+#newMeet-close-popup{
+    float: right;
+    display: inline;
+    margin-top: 10px;
+    background-color: yellow;
+    color: black;
+    border: 1px black;
+    border-style: solid;
+    border-radius: 25px;
+    margin-top: 25px;
 }
