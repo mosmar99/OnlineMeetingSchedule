@@ -1,23 +1,8 @@
+import useFetch from "../utils/useFetch";
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Grid, List, ListItem, ListItemText, Button } from '@mui/material';
-
-const meetings = [
-    {
-        title: "Meeting 1",
-        description: "Description of meeting 1",
-        location: "Somewhere",
-        startDate: new Date("2023-09-23T15:00:00"),
-        endDate: new Date("2023-09-23T15:15:00") 
-    },
-    {
-        title: "Meeting 2",
-        description: "Description of meeting 2",
-        location: "Somewhere",
-        startDate: new Date("2023-10-29T16:00:00"),
-        endDate: new Date("2023-10-29T17:45:00") 
-    }
-]
 
 const dayNames = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 const monthNames = ["January", "Feburary", "Mars", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
@@ -71,27 +56,30 @@ const getVisualMonth = selectedMonth => {
  */
 const Calendar = () => {
     const [viewedMonth, setViewedMonth] = useState(new Date());
+    const {data, isPending, error} = useFetch("http://localhost:3000/api/meetings/list");
 
+    if (isPending) return <p>loading...</p>
+    if (error) return <p>{error}</p>
+
+    const meetings = data.map(item => ({...item, startDate: new Date(item.startDate), endDate: new Date(item.endDate)}))
     const visualMonth = getVisualMonth(viewedMonth);
 
     const nextMonth = () => {
         let month = new Date();
         month.setMonth(viewedMonth.getMonth()+1);
-        console.log(month);
         setViewedMonth(month);
     }
 
     const prevMonth = () => {
         let month = new Date();
         month.setMonth(viewedMonth.getMonth()-1);
-        console.log(month);
         setViewedMonth(month);
     }
 
     return ( 
         <Grid container>
             <Grid item xs={3}>
-                <h2 style={{ margin: "30px 0 5px 15px"}}>Upcoming meetings</h2>
+                <h2 style={{ margin: "30px 0 5px 15px", fontSize: "24px"}}>Upcoming meetings</h2>
                 <List>
                     {meetings.map(meeting => (
                         <ListItem key={meeting.title}>
