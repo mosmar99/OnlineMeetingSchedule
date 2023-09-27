@@ -55,8 +55,9 @@ const getVisualMonth = selectedMonth => {
  * Calendar component made with React
  */
 const Calendar = () => {
+    const {data, isPending, error} = useFetch("http://localhost:3000/api/meetings/");
+
     const [viewedMonth, setViewedMonth] = useState(new Date());
-    const {data, isPending, error} = useFetch("http://localhost:3000/api/meetings/list");
 
     if (isPending) return <p>loading...</p>
     if (error) return <p>{error}</p>

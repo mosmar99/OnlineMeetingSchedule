@@ -1,7 +1,7 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography, Grid } from '@mui/material';
 
-const MuiNavbar = () => {
+const MuiNavbar = ({ user }) => {
   return (
     <div className="muinavbar">
       <AppBar position="relative">
@@ -56,21 +56,24 @@ const MuiNavbar = () => {
                         Home
                     </Typography>
 
-                    <Typography
-                    variant="h6"
-                    noWrap
-                    component="a"
-                    href="/calendar"
-                    sx={{
-                        display: 'inline-block', // Display as inline-block to reduce space
-                        fontWeight: 500,
-                        color: 'common.black',
-                        textDecoration: 'none',
-                        margin: '0 8px', // Adjust the margin as needed
-                    }}
-                    >
-                        Calendar
-                    </Typography>
+                    {user && (
+                      <Typography
+                      variant="h6"
+                      noWrap
+                      component="a"
+                      href="/calendar"
+                      sx={{
+                          display: 'inline-block', // Display as inline-block to reduce space
+                          fontWeight: 500,
+                          color: 'common.black',
+                          textDecoration: 'none',
+                          margin: '0 8px', // Adjust the margin as needed
+                      }}
+                      >
+                          Calendar
+                      </Typography>
+                    )}
+                    
 
                     <Typography
                     variant="h6"
@@ -121,6 +124,7 @@ const MuiNavbar = () => {
                     </Typography>
                     </div>
 
+                  {!user && (
                     <Typography
                   variant="h6"
                   noWrap
@@ -145,7 +149,9 @@ const MuiNavbar = () => {
                 >
                   Sign up
                 </Typography>
+                )}
 
+                {!user && (
                 <Typography
                   variant="h6"
                   noWrap
@@ -168,6 +174,32 @@ const MuiNavbar = () => {
                 >
                   Login
                 </Typography>
+                )}
+
+                {user && (
+                <Typography
+                  variant="h6"
+                  noWrap
+                  component="a"
+                  href="/logout"
+                  sx={{
+                    fontWeight: 500,
+                    color: 'common.black',
+                    textDecoration: 'none',
+                    marginLeft: '20px',
+                    display: 'inline-block',
+                    border: '1.5px solid black',
+                    padding: '12px',
+                    borderRadius: '25px',
+                    fontSize: '14px',
+                    fontFamily: 'Roboto',
+                    width: '100px',
+                    textAlign: 'center',
+                  }}
+                >
+                  Logout
+                </Typography>
+                )}
                 </Grid>
             </Grid>
 
