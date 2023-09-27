@@ -24,7 +24,7 @@ const NewMeet = () => {
 
         console.log(data);
 
-        axios.post("/api/meetings/add", data)
+        axios.post("/api/meetings/", data)
             .then(res => {
                 navigate("/calendar");
             })

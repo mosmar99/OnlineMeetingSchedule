@@ -1,22 +1,11 @@
-function Meeting(title, description, place, startDate, endDate) {
-    this.title = title;
-    this.description = description;
-    this.place = place;
-    this.startDate = startDate;
-    this.endDate = endDate;
-}
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-var meetings = [
-    new Meeting(
-        "Team meeting", 
-        "Meet for a discussion on current progress, future plans and responsibility.",
-        "Somewhere",
-        new Date("2023-09-25T15:00:00"),
-        new Date("2023-09-25T16:00:00")
-    )
-];
+const meetingSchema = new Schema({
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+    startDate: { type: String, required: true },
+    endDate: { type: String, required: true }
+}, { timestamps: true });
 
-module.exports = {
-    Meeting,
-    meetings
-}
+module.exports = mongoose.model('Meeting', meetingSchema);
