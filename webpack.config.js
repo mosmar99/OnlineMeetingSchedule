@@ -49,7 +49,7 @@ module.exports = (_, argv) => {
                     use: ["style-loader", "css-loader"]
                 },
                 {
-                    test: /\.(?:ico|gif|png|jpg|jpeg)$/i,
+                    test: /\.(?:ico|gif|png|jpg|jpeg|svg)$/i,
                     type: "asset/resource"
                 }
             ],
