@@ -1,18 +1,14 @@
-function User(username, email, password) {
-    this.username = username;
-    this.email = email;
-    this.password = password;
-}
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-var users = [
-    new User(
-        "Username1",
-        "Email1",
-        "Password1"
-    )
-];
 
-module.exports = {
-    User,
-    users
-}
+// Define the schema for the Users collection
+const userSchema = new Schema({
+  username: { type: String, required: true },
+  email: { type: String, required: true },
+  password: { type: String, required: true },
+  contacts: [{ type: Schema.Types.ObjectId, ref: 'User' }], // Referencing other User documents as contacts
+}, {timestamps: true});
+
+// Create a model for the Users collection
+module.exports = mongoose.model('User', userSchema);

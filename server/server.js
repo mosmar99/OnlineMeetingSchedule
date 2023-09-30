@@ -2,10 +2,17 @@ const express = require('express');
 const routes = require("./routes");
 const mongoose = require('mongoose');
 
+// get access to .env vars
 require('dotenv').config()
 
+// start server
 const app = express();
-const port = 3000;
+
+// enable req.body
+app.use(express.json());
+
+// mountain routes on "/"
+app.use("/", routes);
 
 if (process.argv[2] === "development") {
     app.use((req, res, next) => {
@@ -17,12 +24,6 @@ if (process.argv[2] === "development") {
         next();
     });
 }
-
-app.use(express.json());
-
-app.use("/", routes);
-
-app.listen(port, () => console.log(`Express server listening on port ${port}!`))
 
 mongoose.connect(process.env.DATABASE_URL)
     .then(() => {
