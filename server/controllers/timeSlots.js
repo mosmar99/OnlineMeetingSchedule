@@ -1,10 +1,22 @@
 const TimeSlot = require('../models/timeSlots');
+const moment = require('moment');
 
-// Controller function to create a new time slot
 async function createTimeSlot(req, res) {
   try {
-    const { startDate, length } = req.body;
-    const timeSlot = await TimeSlot.create({ startDate, length });
+    const { startDate, endDate } = req.body;
+
+    // Validate and parse startDate and endDate
+    const startTime = moment(startDate, moment.ISO_8601, true);
+    const endTime = moment(endDate, moment.ISO_8601, true);
+
+    // Check if parsing was successful
+    if (!startTime.isValid() || !endTime.isValid()) {
+      return res.status(400).json({ message: 'Invalid date format' });
+    }
+
+    // Create the time slot with the parsed values
+    const timeSlot = await TimeSlot.create({ startTime, endTime });
+
     res.status(201).json(timeSlot);
   } catch (error) {
     console.error(error);
