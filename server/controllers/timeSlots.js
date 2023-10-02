@@ -3,24 +3,26 @@ const moment = require('moment');
 
 async function createTimeSlot(req, res) {
   try {
-    const { startDate, endDate } = req.body;
+    // Extract startTime and endTime from the request object
+    const { startTime, endTime } = req.body;
 
-    // Validate and parse startDate and endDate
-    const startTime = moment(startDate, moment.ISO_8601, true);
-    const endTime = moment(endDate, moment.ISO_8601, true);
-
-    // Check if parsing was successful
-    if (!startTime.isValid() || !endTime.isValid()) {
-      return res.status(400).json({ message: 'Invalid date format' });
+    // Validate startTime and endTime
+    if (!startTime || !endTime) {
+      return res.status(400).json({ message: 'Missing startTime or endTime' });
     }
 
-    // Create the time slot with the parsed values
-    const timeSlot = await TimeSlot.create({ startTime, endTime });
+    // Create a new time slot using startTime and endTime
+    const newTimeSlot = await TimeSlot.create({
+      startTime,
+      endTime,
+    });
 
-    res.status(201).json(timeSlot);
+    // Send a success response
+    res.status(201).json(newTimeSlot);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error creating time slot' });
+    // Handle any errors that may occur during the process
+    console.error('Error creating time slot:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 }
 
