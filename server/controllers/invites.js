@@ -1,22 +1,22 @@
 const Invite = require('../models/invites');
-const mongoose = require('mongoose');
+const { ObjectId } = require('mongodb');
 
 // Controller function to create a new invite
 async function createInvite(req, res) {
     try {
       // Extract the necessary data from the request body
-      const { participantId, timeSlotId, vote } = req.body;
+      const { participant, timeSlot, vote } = req.body;
 
-      // const id = new ObjectId(req.params.id);
+      console.log(req.body);
 
       // Convert _id string to ObjectId
-      const objectParticipantId = new mongoose.Types.ObjectId(participantId);
-      const objectTimeSlotId = new mongoose.Types.ObjectId(timeSlotId);
-  
+      const participantId = new ObjectId(participant);
+      const timeSlotId = new ObjectId(timeSlot);
+      
       // Create a new invite document
       const newInvite = await Invite.create({
-        participant: objectParticipantId,
-        timeSlot: objectTimeSlotId,
+        participant: participantId,
+        timeSlot: timeSlotId,
         vote
       });
   
@@ -24,7 +24,7 @@ async function createInvite(req, res) {
       res.status(201).json(newInvite);
     } catch (error) {
       // Handle any errors that may occur during the process
-      console.error('Error creating invite:', error);
+      console.error('Error creating invite:', error.message);
       res.status(500).json({ message: 'Error creating invite' });
     }
 }
