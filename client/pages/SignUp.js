@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { TextField, Button, Box, Stack, Typography } from '@mui/material';
 import { Link, useNavigate } from "react-router-dom";
+import { isValidEmail } from "../utils/validateInput"
 import axios from "axios";
 import bgImage from "../../public/tilebg.svg";
 
@@ -17,17 +18,17 @@ const SignUp = ({ setUser }) => {
     const handleChange = (e) => {
         setformInput({
             ...formInput,
-            [e.target.name]: e.target.value
+            [e.target.name]: e.target.value,
         });
     }
 
     const handleSubmit = e =>{
         e.preventDefault();
 
-        let error = (!formInput.username || !formInput.email || (!formInput.password || formInput.password !== password2))
+        let error = (!formInput.username || !isValidEmail(formInput.email) || (!formInput.password || formInput.password !== password2))
 
         setUsernameError(!formInput.username);
-        setEmailError(!formInput.email);
+        setEmailError(!isValidEmail(formInput.email));
         setPasswordError(!formInput.password || formInput.password !== password2);
 
         if (error) return;
