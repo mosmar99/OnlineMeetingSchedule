@@ -1,22 +1,3 @@
-.newMeet{
-    text-align: center;
-    padding-top: 5%;
-    background-color: #fffcc4;
-    height: 100vh;
-}
-
-.newMeet-form-container{
-    width: 25%;
-    display: inline-block;
-    text-align: left;
-    border:black;
-    border-style: solid;
-    padding: 25px;
-    border-radius: 20px;
-    padding-top: 0px;
-    background-color: white;
-}
-
 #newMeet-button{
     margin-top: 10px;
     background-color: yellow;
@@ -26,6 +7,45 @@
     border-radius: 25px;
 }
 
-#newMeet-h1{
+
+#newMeet-close{
+    float: right;
+    display: inline;
+    background-color: yellow;
     color: black;
+    border: 1px black;
+    border-style: solid;
+    margin-top: 40px;
+    border-radius: 25px;
+}
+
+#newMeet-h1{
+    float: left;
+    display: inline;
+    color: black;
+}
+
+#newMeet-add-time-button{
+    margin-top: 10px;
+    background-color: lightgreen;
+    color: black;
+    border: 1px black;
+    border-style: solid;
+    border-radius: 25px;
+}
+
+#newMeet-remove-time-button{
+    margin-top: 15px;
+    background-color: lightcoral;
+    color: black;
+    border: 1px black;
+    border-style: solid;
+    border-radius: 25px;
+    float:right;
+    display: inline;
+}
+
+#nm-dt{
+    float:left;
+    display: inline;
 }

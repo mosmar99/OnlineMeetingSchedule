@@ -10,6 +10,7 @@ import NewMeet from "./pages/NewMeet";
 import Login from "./pages/Login";
 import Logout from "./pages/Logout";
 import SignUp from "./pages/SignUp";
+import Calendar from "./pages/Calendar";
 
 // components
 import MuiNavbar from "./components/MuiNavbar";
