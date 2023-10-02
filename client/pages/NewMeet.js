@@ -31,7 +31,6 @@ const NewMeet = () => {
 
     const userData = [data];
     const users = userData[0];
-    console.log(users);
 
     const toggle = () =>{
         setOpen(!open);
@@ -68,13 +67,15 @@ const NewMeet = () => {
             }
     }
 
+    //<h1 id="newMeet-h1">Add a new meeting</h1>
+
     return ( 
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <div className="newMeet">
                 <Button onClick={toggle} style={{ margin: "30px 0 5px 15px"}}>+ New meeting</Button>
                 <Dialog open = {open}>
                     <DialogTitle>
-                        <h1 id="newMeet-h1">Add a new meeting</h1>
+                        <p id="newMeet-h1">Add a new meeting</p>
                         <Button variant='contained' id="newMeet-close" onClick={toggle}>X</Button>
                     </DialogTitle>
                     <DialogContent>
@@ -87,28 +88,30 @@ const NewMeet = () => {
                                 <TextField id="newMeet-place" variant="outlined" label="Place" required margin="dense" fullWidth={true}   value={place} onChange={e => setPlace(e.target.value)}></TextField>
 
                                 {/*ADD USERS TO MEETING*/}
-                                <Autocomplete
-                                    sx={{marginTop: 1}}
-                                    fullWidth={true}
-                                    multiple
-                                    options={users}
-                                    disableCloseOnSelect
-                                    getOptionLabel={(option) => option.username}
-                                    renderOption={(props, option, { selected }) => (
-                                        <li {...props}>
-                                        <Checkbox
-                                            icon={icon}
-                                            checkedIcon={checkedIcon}
-                                            style={{ marginRight: 8 }}
-                                            checked={selected}
-                                        />
-                                        {option.username}
-                                        </li>
-                                    )}
-                                    renderInput={(params) => (
-                                        <TextField {...params} label="Add users to meeting" placeholder="Users" />
-                                    )}
-                                />
+                                {users != null &&
+                                    <Autocomplete
+                                        sx={{marginTop: 1}}
+                                        fullWidth={true}
+                                        multiple
+                                        options={users}
+                                        disableCloseOnSelect
+                                        getOptionLabel={(option) => option.username}
+                                        renderOption={(props, option, { selected }) => (
+                                            <li {...props}>
+                                            <Checkbox
+                                                icon={icon}
+                                                checkedIcon={checkedIcon}
+                                                style={{ marginRight: 8 }}
+                                                checked={selected}
+                                            />
+                                            {option.username}
+                                            </li>
+                                        )}
+                                        renderInput={(params) => (
+                                            <TextField {...params} label="Add users to meeting" placeholder="Users" />
+                                        )}
+                                    />
+                                }
 
                                 {/*TIME SLOTS*/}
                                 {timeList.map((singleTime, index) => (
