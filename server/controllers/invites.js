@@ -7,8 +7,6 @@ async function createInvite(req, res) {
       // Extract the necessary data from the request body
       const { participant, timeSlot, vote } = req.body;
 
-      console.log(req.body);
-
       // Convert _id string to ObjectId
       const participantId = new ObjectId(participant);
       const timeSlotId = new ObjectId(timeSlot);

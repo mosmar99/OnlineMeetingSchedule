@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 // Create a new meeting
 async function createMeeting(req, res) {
-    const { organizer, participants, title, description, timeSlots } = req.body;
+    const { organizer, participants, title, description, timeSlots, invites } = req.body;
   
     try {
       const newMeeting = await Meeting.create({
@@ -11,7 +11,8 @@ async function createMeeting(req, res) {
         participants,
         title,
         description,
-        timeSlots
+        timeSlots,
+        invites
       });
   
       res.status(201).json(newMeeting);
