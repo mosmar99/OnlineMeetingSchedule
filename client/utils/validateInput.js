@@ -1,7 +1,7 @@
 
 /**
  * @param {string} email 
- * @returns {boolean,}
+ * @returns {boolean}
  */
 const isValidEmail = (email) => {
     const exp = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/ig; // not perfect but works for now
@@ -10,7 +10,7 @@ const isValidEmail = (email) => {
 
 /**
  * @param {string} password
- * @returns {boolean, string}
+ * @returns {boolean}
  */
 const isValidPassword = (password) => {
     let exp = /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[A-Z])(?=.*[a-zA-Z])[a-zA-Z-\#\$\.\%\&\*\d]{8,16}$/g
