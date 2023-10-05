@@ -1,13 +1,126 @@
-h2 {
+#home {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
-    font-size: 4vw;
-    margin: 0;
-    margin-top: 6vw;
+}
+
+#home-title {
+    font-family: var(--lora);
+    font-size: 64px;
+    margin: 150px 0 0 0;
 }
 
 #home-paragraph {
-    text-align: center;
-    font-size: 2vw;
-    padding-top: -1vw;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-family: var(--helvetica);
+    font-size: 18px;
+    margin: 20px 0 0 0;
+}
+
+.home-get-started {
+    text-decoration: none;
+    color: black;
+    background-color: #FFEF5A;
+    border: 1px solid #E4A62C;
+    padding: 16px 52px;
+    border-radius: 28px;
+}
+
+#home-why {
+    background-color: #F5F5F5;
+    border-top: 1px solid rgba(0, 0, 0, 0.25);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+    width: 100%;
+    margin-top: 130px;
+    height: 460px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+#home-why-container {
+    width: 1000px;
+    display: flex;
+    justify-content: space-between;
+}
+
+#home-why-left {
+    text-align: left;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+#home-why-left > h2 {
+    font-size: 24px;
+    margin: 0 0 27px 0;
+}
+
+#home-why-left li {
+    font-size: 18px;
+}
+
+#home-why-left li:not(:last-child) {
+    margin-bottom: 22px;
+}
+
+#home-why-right {
+    position: relative;
+    width: 493px;
+    height: 293px;
+}
+
+#home-events-preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 416px;
+    
+}
+
+#home-calendar-preview {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 416px;
+}
+
+#home-help {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+    width: 1000px;
+    margin-top: 145px;
+    margin-bottom: 170px;
+}
+
+#home-help-left > h2 {
+    font-size: 32px;
+    margin: 0 0 23px 0;
+}
+
+#home-help-left > p {
+    font-size: 18px;   
+}
+
+#home-help-how {
+    padding: 15px 45px;
+    border: 1px solid #E4A62C;
+    border-radius: 28px;
+    background-color: #FFEF5A;
+    text-decoration: none;
+    font-size: 14px;
+    margin-right: 20px;
+    color: black;
+}
+
+#home-help-support {
+    padding: 16px 63px;
+    border-radius: 28px;
+    background-color: #2A2A2A;
+    font-size: 14px;
+    color: white;
+    text-decoration: none;
 }

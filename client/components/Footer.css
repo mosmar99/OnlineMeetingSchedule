@@ -1,0 +1,28 @@
+#footer {
+    height: 125px;
+    background: #FFF8BD;
+    border-top: 1px solid #F9C43E;
+    display: flex; 
+    justify-content: center;
+    width: 100%;
+}
+
+#footer-content {
+    width: 1000px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#footer-content > h6 {
+    font-family: var(--helvetica);
+    font-size: 16px;
+}
+
+#footer-content > div > * {
+    text-decoration: none;
+    color: black;
+    margin-left: 25px;
+    font-size: 14px;
+}
+
