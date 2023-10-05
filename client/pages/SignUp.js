@@ -1,19 +1,21 @@
 import { useState } from "react";
 import { TextField, Button, Box, Stack, Typography } from '@mui/material';
 import { Link, useNavigate } from "react-router-dom";
-import { isValidEmail } from "../utils/validateInput"
+import { isValidEmail } from "../utils/validateInput";
 import axios from "axios";
 import bgImage from "../../public/tilebg.svg";
 
 const SignUp = ({ setUser }) => {
     const navigate = useNavigate();
 
-    const [formInput, setformInput] = useState({username: "", email: "", password: ""});
+    const [formInput, setformInput] = useState({username: "", email: "", password: "", firstName: "", lastName: ""});
     const [password2, setPassword2] = useState(""); 
     
-    const [usernameError, setUsernameError] = useState(false)
+    const [usernameError, setUsernameError] = useState(false);
     const [emailError, setEmailError]       = useState(false);
     const [passwordError, setPasswordError] = useState(false);
+
+    const errorMessage = (emailError ? "invalid email\n" : "") + ( usernameError ? "Username Required\n" : "");
 
     const handleChange = (e) => {
         setformInput({
@@ -33,7 +35,7 @@ const SignUp = ({ setUser }) => {
 
         if (error) return;
 
-        axios.post("/api/users/signup", formInput)
+        axios.post( "/api/users/signup", formInput)
             .then(res => {
                 setUser(res.data);
                 navigate("/calendar");
@@ -58,6 +60,7 @@ const SignUp = ({ setUser }) => {
                                                     borderColor: "#ffc64d"}}>
 
                 <Typography variant="h3" align="center">Sign up</Typography>
+                <Typography variant="h7" align="center" sx={{visibility: emailError ? "visible" : "hidden"}}></Typography>
                 <TextField 
                         name="username"
                         variant="outlined" 
@@ -94,6 +97,20 @@ const SignUp = ({ setUser }) => {
                         onChange={e => setPassword2(e.target.value)}
                         value={password2}
                         error={passwordError}
+                    />
+                    <TextField
+                        name="firstName"
+                        variant="outlined"  
+                        label="First name"
+                        onChange={handleChange}
+                        value={formInput.firstName}
+                    />
+                    <TextField
+                        name="lastName"
+                        variant="outlined"  
+                        label="Last name"
+                        onChange={handleChange}
+                        value={formInput.lastName}
                     />
                 <Button variant='contained' onClick={handleSubmit}>Sign up</Button>
                 <Link fontSize={"20px"} to="/login" align="center">Already have an account? Sign in</Link>
