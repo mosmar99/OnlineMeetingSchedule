@@ -1,0 +1,45 @@
+#meetings-header {
+    display: flex;
+    justify-content: center;
+    background-color: #F5F5F5;
+    border-bottom: 1px solid #BFBFBF;
+    height: 125px;
+}
+
+#meetings-header-content {
+    width: 1000px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+.meetings-header-page {
+    font-family: var(--lora);
+    font-size: 24px;
+    font-weight: bold;
+    margin-right: 20px;
+    color: #909090;
+    text-decoration: none;
+}
+
+.meetings-header-active-page {
+    color: black;
+    font-family: var(--lora);
+    font-size: 40px;
+    font-weight: bold;
+    margin-right: 20px;
+    margin-bottom: 33px;
+    text-decoration: none;
+}
+
+#meetings-new-meeting {
+    padding: 17px 38px;
+    background-color: #FFEF5A;
+    border: 1px solid #E4A62C;
+    margin-bottom: 33px;
+    border-radius: 28px;
+    font-size: 14px;
+    font-family: var(--helvetica);
+    cursor: pointer;
+}
+

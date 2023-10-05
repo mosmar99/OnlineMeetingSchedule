@@ -1,7 +1,20 @@
-body{
-    overflow: hidden;
+:root {
+    --lora: "Lora", serif;
+    --helvetica: "Helvetica neue", "Helvetica", arial, sans-serif;
 }
 
-html, body{
-    margin:0px
+body {
+    font-family: var(--helvetica);
+}
+
+html, body {
+    margin:0px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--lora);
+}
+
+.app-container {
+    min-height: 100vh;
 }

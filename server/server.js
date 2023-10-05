@@ -3,10 +3,17 @@ const routes = require("./routes");
 const cors = require("cors");
 const mongoose = require('mongoose');
 
+// get access to .env vars
 require('dotenv').config()
 
+// start server
 const app = express();
-const port = 3000;
+
+// enable req.body
+app.use(express.json());
+
+// mountain routes on "/"
+app.use("/", routes);
 
 if (process.argv[2] === "development") {
     app.use((req, res, next) => {
@@ -34,10 +41,6 @@ var corsOptionsDelegate = function (req, callback) {
 }
 
 app.use(cors(corsOptionsDelegate));
-
-app.use(express.json());
-
-app.use("/", routes);
 
 mongoose.connect(process.env.DATABASE_URL)
     .then(() => {

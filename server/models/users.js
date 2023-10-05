@@ -1,18 +1,13 @@
-function User(username, email, password) {
-    this.username = username;
-    this.email = email;
-    this.password = password;
-}
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-var users = [
-    new User(
-        "Username1",
-        "Email1",
-        "Password1"
-    )
-];
+const UserSchema = new Schema({
+  username: { type: String, required: true },
+  email: { type: String, required: true, unique: true }, 
+  firstName: { type: String },
+  lastName: { type: String }, 
+  password: { type: String, required: true }, 
+  contacts: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+}, {timestamps: true});
 
-module.exports = {
-    User,
-    users
-}
+module.exports = mongoose.model('User', UserSchema);
