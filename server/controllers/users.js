@@ -1,29 +1,39 @@
-const { users, User } = require("../models/users");
+const User = require('../models/users');
+const mongoose = require('mongoose');
 
-function signup(req, res) {
-    let { username, email, password } = req.body;
-    let user = new User(username, email, password);
-    
-    users.push(user);
-    
-    res.send(user);
-}
-
-function login(req, res) {
-    let { email, password } = req.body;
-    
-    for (let i = 0; i < users.length; i++) {
-        if (users[i].email === email && users[i].password === password) {
-            res.send(users[i]);
-            return;
-        }
+async function signup(req, res) {
+    try {
+        const newUser = await User.create(req.body);
+        res.status(201).json(newUser);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error creating user" });
     }
-
-    res.status(400).json({ message: "Invalid login info" });
+  }
+  
+async function login(req, res) {
+    const { email, password } = req.body;
+    try {
+        const user = await User.findOne({ email, password });
+        if (user) {
+            res.json(user);
+        } else {
+            res.status(401).json({ message: "Invalid login info" });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error during login" });
+    }
 }
 
-function list(req, res) {
-    res.send(users);
+async function list(req, res) {
+    try {
+        const users = await User.find();
+        res.json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error getting all users" });
+    }
 }
 
 module.exports = {
