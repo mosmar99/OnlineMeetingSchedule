@@ -4,7 +4,7 @@
   "description": "Programming web application",
   "main": "client/index.js",
   "scripts": {
-    "dev": "concurrently -n webpack,express \"webpack --mode development --watch\" \"node server/server.js development\"",
+    "dev": "concurrently -n webpack,express \"webpack --mode development --watch\" \"nodemon server/server.js development\"",
     "prod": "webpack --mode production && node server/server.js"
   },
   "author": "",
@@ -21,6 +21,8 @@
     "express": "^4.18.2",
     "html-webpack-plugin": "^5.5.3",
     "interpolate-html-plugin": "^4.0.0",
+    "moment": "^2.29.4",
+    "nodemon": "^3.0.1",
     "style-loader": "^3.3.3",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4"
@@ -32,8 +34,10 @@
     "@mui/material": "^5.14.10",
     "@mui/x-date-pickers": "^6.15.0",
     "axios": "^1.5.0",
+    "cors": "^2.8.5",
     "dayjs": "^1.11.10",
     "dotenv": "^16.3.1",
+    "g": "^2.0.1",
     "mongoose": "^7.5.3",
     "react": "^18.2.0",
     "react-cookie": "^6.1.1",

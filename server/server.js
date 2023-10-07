@@ -1,11 +1,19 @@
 const express = require('express');
 const routes = require("./routes");
+const cors = require("cors");
 const mongoose = require('mongoose');
 
+// get access to .env vars
 require('dotenv').config()
 
+// start server
 const app = express();
-const port = 3000;
+
+// enable req.body
+app.use(express.json());
+
+// mountain routes on "/"
+app.use("/", routes);
 
 if (process.argv[2] === "development") {
     app.use((req, res, next) => {
@@ -18,11 +26,21 @@ if (process.argv[2] === "development") {
     });
 }
 
-app.use(express.json());
+var allowlist = ['http://localhost:3000/', "http://127.0.0.1:3000/"]
 
-app.use("/", routes);
+var corsOptionsDelegate = function (req, callback) {
+    var corsOptions;
 
-app.listen(port, () => console.log(`Express server listening on port ${port}!`))
+    if (allowlist.indexOf(req.header('Origin')) !== -1) {
+        corsOptions = { origin: true } // reflect (enable) the requested origin in the CORS response
+    } else {
+        corsOptions = { origin: false } // disable CORS for this request
+    }
+
+    callback(null, corsOptions) // callback expects two parameters: error and options
+}
+
+app.use(cors(corsOptionsDelegate));
 
 mongoose.connect(process.env.DATABASE_URL)
     .then(() => {
