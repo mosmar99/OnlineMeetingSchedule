@@ -63,7 +63,7 @@ const Login = ({ setUser }) => {
                         value={formInput.password}
                     />
                 <Button variant='contained' onClick={handleSubmit}>Sign in</Button>
-                <Link fontSize={"20px"} to="/login" align="center">No accout? Sign up</Link>
+                <Link fontSize={"20px"} to="/login" align="center">No account? Sign up</Link>
             </Stack>
         </Box>
     );

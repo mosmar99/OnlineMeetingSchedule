@@ -22,8 +22,8 @@ function MeetingsHeader({ activePage }) {
                     ))}
                 </div>
                 
-                <div id="meetings-new-meeting"  onClick={() => alert("Not setup.")}>
-                    + New Meeting
+                <div id="meetings-new-meeting">
+                    <Link to="/newMeet">+ New Meeting</Link>
                 </div>
             </div>
         </div>

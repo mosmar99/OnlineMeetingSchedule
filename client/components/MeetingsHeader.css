@@ -34,12 +34,14 @@
 
 #meetings-new-meeting {
     padding: 17px 38px;
-    background-color: #FFEF5A;
+    background-color: #AFEF5A;
     border: 1px solid #E4A62C;
     margin-bottom: 33px;
     border-radius: 28px;
     font-size: 14px;
     font-family: var(--helvetica);
     cursor: pointer;
+    text-decoration: none;
+    color: black;
 }
 
