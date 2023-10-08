@@ -54,9 +54,10 @@ async function getInviteById(req, res) {
 }
 
 // Controller function to get all invites for a participant by their ID
-async function getInvitesByParticipantId(req, res) {
+async function invitesByParticipantId(req, res) {
   try {
-    const { participantId } = req.params;
+    // Convert the string to an ObjectId
+    const participantId = new ObjectId(req.params.participant);
 
     // Use Mongoose to find all invites where the participant matches the given ID
     const invites = await Invite.find({ participant: participantId });
@@ -123,6 +124,6 @@ module.exports = {
   getInviteById,
   updateInvite,
   deleteInvite,
-  getInvitesByParticipantId,
+  invitesByParticipantId,
   deleteAllInvites,
 };
