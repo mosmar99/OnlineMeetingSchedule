@@ -10,7 +10,6 @@ import "./NewMeet.css";
 import useFetch  from "../utils/useFetch";
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
-const mongoose = require("mongoose");
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -72,7 +71,6 @@ const NewMeet = () => {
         for (let i = 0; i < timeList.length; i++){
             times.startTime = JSON.stringify(timeList[i][0]);
             times.endTime = JSON.stringify(timeList[i][1]);
-            let test;
             axios.post("/api/timeSlots", times)
                 .then(res=>{
                     for (let y = 0; y < nmparticipants.length; y++){
@@ -82,33 +80,35 @@ const NewMeet = () => {
                             vote: "maybe"
                         }
                         axios.post("/api/invites", invite).then(res=>{
-                            nminvites[y] = res.data._id;
+                            nminvites.push(res.data._id);
                         })
                     }
-                    nmtimeSlots[i] = res.data._id;
+                    nmtimeSlots.push(res.data._id);
                 })
         }
 
-        console.log(nmtimeSlots);
-        console.log(nminvites);
-
-        //new mongoose.Types.ObjectId(nmorganizer)
-        const meeting = {
-            organizer: nmorganizer,
-            participants: nmparticipants,
-            title: nmtitle,
-            description: nmdesc,
-            timeSlots: nmtimeSlots,
-            invites: nminvites
-        }
-
-        console.log(meeting);
-
-        axios.post("/api/meetings/", meeting)
-        .then( res =>{
-
-        })
-
+        let p = new Promise(resolve => {
+            setTimeout(() => {
+                console.log(nmtimeSlots);
+                console.log(nminvites);
+                const meeting = {
+                    organizer: nmorganizer,
+                    participants: nmparticipants,
+                    title: nmtitle,
+                    description: nmdesc,
+                    timeSlots: nmtimeSlots,
+                    invites: nminvites
+                }
+        
+                console.log(meeting);
+        
+                axios.post("/api/meetings/", meeting)
+                .then( res =>{
+        
+                })
+            },100);
+            resolve(nmtimeSlots);
+        });
     }
 
 
