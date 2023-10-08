@@ -15,7 +15,6 @@ const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const NewMeet = () => {
-    const navigate = useNavigate();
 
     const [nmtitle, setTitle] = useState("");
     const [nmdesc, setDesc]   = useState("");
@@ -104,7 +103,7 @@ const NewMeet = () => {
         
                 axios.post("/api/meetings/", meeting)
                 .then( res =>{
-        
+
                 })
             },100);
             resolve(nmtimeSlots);
