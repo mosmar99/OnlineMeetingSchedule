@@ -53,6 +53,21 @@ async function getInviteById(req, res) {
   }
 }
 
+// Controller function to get all invites for a participant by their ID
+async function getInvitesByParticipantId(req, res) {
+  try {
+    const { participantId } = req.params;
+
+    // Use Mongoose to find all invites where the participant matches the given ID
+    const invites = await Invite.find({ participant: participantId });
+
+    res.json(invites);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching invites for the participant' });
+  }
+}
+
 // Controller function to update an invite by ID
 async function updateInvite(req, res) {
   try {
@@ -84,10 +99,30 @@ async function deleteInvite(req, res) {
   }
 }
 
+// Controller function to delete all invites in the database
+async function deleteAllInvites(req, res) {
+  try {
+    // Use Mongoose's deleteMany to remove all invites
+    const result = await Invite.deleteMany({});
+
+    // Check the result to determine if any invites were deleted
+    if (result.deletedCount === 0) {
+      return res.json({ message: 'No invites found to delete' });
+    }
+
+    res.json({ message: `${result.deletedCount} invites deleted successfully` });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error deleting invites' });
+  }
+}
+
 module.exports = {
   createInvite,
   getAllInvites,
   getInviteById,
   updateInvite,
   deleteInvite,
+  getInvitesByParticipantId,
+  deleteAllInvites,
 };

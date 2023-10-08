@@ -1,6 +1,7 @@
 import "./Events.css";
 import { useState } from "react";
 import MeetingsHeader from "../../components/MeetingsHeader";
+import axios from "axios";
 
 const FilterButton = () => {
 
@@ -88,10 +89,21 @@ function Events() {
                                 <span>{event.host}</span>
                             </div>
                         ))}
-                        {!events.length && (
+                        {!events.length ? (
                             <div id="events-none-found">
                                 No {view} events.
                             </div>
+                        ) : (
+                            events.map((event, index) => (
+                                <div className="events-list-item" key={index}>
+                                    <span>{event.title}</span>
+                                    <span>{event.date}</span>
+                                    <span>{event.time}</span>
+                                    <span>{event.host}</span>
+                                    {/* Add a vote button here */}
+                                    <button onClick={() => handleVoteClick(event)}>Vote</button>
+                                </div>
+                            ))
                         )}
                     </div>
                     <span id="events-end-notice">You’ve reached the end of the list.</span>
