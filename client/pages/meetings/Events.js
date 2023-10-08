@@ -18,6 +18,7 @@ const ChipButton = ({title, active, number, onClick}) => {
 
 function Events() {
     const [view, setView] = useState("upcoming");
+    const [votes, setVotes] = useState([]);
 
     const meetings = [
         {
@@ -28,6 +29,18 @@ function Events() {
             time: "15:00-17:00",
         }
     ]
+
+    useEffect(() => {
+        // Fetch all votes for the participant
+        const participantId = "65187dc4516fb886c50363b0";
+        axios.get(`http://localhost:3000/api/invites/user/${participantId}`)
+          .then((response) => {
+            setVotes(response.data);
+          })
+          .catch((error) => {
+            console.error("Error fetching votes:", error);
+          });
+      }, []);
 
     const views = [
         {
@@ -89,21 +102,10 @@ function Events() {
                                 <span>{event.host}</span>
                             </div>
                         ))}
-                        {!events.length ? (
+                        {!events.length && (
                             <div id="events-none-found">
                                 No {view} events.
                             </div>
-                        ) : (
-                            events.map((event, index) => (
-                                <div className="events-list-item" key={index}>
-                                    <span>{event.title}</span>
-                                    <span>{event.date}</span>
-                                    <span>{event.time}</span>
-                                    <span>{event.host}</span>
-                                    {/* Add a vote button here */}
-                                    <button onClick={() => handleVoteClick(event)}>Vote</button>
-                                </div>
-                            ))
                         )}
                     </div>
                     <span id="events-end-notice">You’ve reached the end of the list.</span>
@@ -111,6 +113,11 @@ function Events() {
             </div>
         </div>
     )
+
+    // Function to handle voting for a timeslot
+    const handleVote = (vote) => {
+
+    };
 }
 
 export default Events;

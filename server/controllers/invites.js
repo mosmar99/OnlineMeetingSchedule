@@ -73,8 +73,8 @@ async function invitesByParticipantId(req, res) {
 async function updateInvite(req, res) {
   try {
     const { id } = req.params;
-    const { userId, voted, notified } = req.body;
-    const updatedInvite = await Invite.findByIdAndUpdate(id, { userId, voted, notified }, { new: true });
+    const { userId, vote } = req.body; 
+    const updatedInvite = await Invite.findByIdAndUpdate(id, { userId, vote }, { new: true });
     if (!updatedInvite) {
       return res.status(404).json({ message: 'Invite not found' });
     }
@@ -84,6 +84,7 @@ async function updateInvite(req, res) {
     res.status(500).json({ message: 'Error updating invite' });
   }
 }
+
 
 // Controller function to delete an invite by ID
 async function deleteInvite(req, res) {
