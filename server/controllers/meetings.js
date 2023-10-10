@@ -1,4 +1,5 @@
 const Meeting = require('../models/meetings');
+const { invitesByParticipantId } = require('./invites.js'); 
 const mongoose = require('mongoose');
 
 // Create a new meeting
@@ -105,10 +106,54 @@ async function deleteMeeting(req, res) {
   }
 }
 
+// Function to get filtered time slots
+function getMaybeTimeSlots(invites) {
+  const maybeTimeSlots = [];
+
+  for (const invite of invites) {
+    if (invite.vote === 'maybe') {
+      maybeTimeSlots.push(invite.timeSlot.toString());
+    }
+  }
+
+  return maybeTimeSlots;
+}
+
+// Function to find meetings based on filtered time slots
+async function findMeetingsBasedOnTimeSlots(timeSlots) {
+  try {
+    const matchingMeetings = await Meeting.find({ timeSlots: { $in: timeSlots } });
+    return matchingMeetings;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Error finding meetings based on time slots');
+  }
+}
+
+// Function to find meetings with filtered time slots
+async function getPendingMeetings(req, res) {
+  try {
+
+    const userId = req.params.userId;
+
+    const invites = await invitesByParticipantId(userId);
+
+    const maybeTimeSlots = getMaybeTimeSlots(invites);
+
+    const matchingMeetings = await findMeetingsBasedOnTimeSlots(maybeTimeSlots);
+
+    res.json(matchingMeetings);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error finding meetings with filtered time slots' });
+  }
+}
+
 module.exports = {
     createMeeting,
     getMeetings,
     getMeetingById,
     updateMeeting,
-    deleteMeeting
+    deleteMeeting,
+    getPendingMeetings
 }
