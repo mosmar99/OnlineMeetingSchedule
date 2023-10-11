@@ -391,6 +391,15 @@ async function getUpcomingMeetings(req, res) {
       }
       count = 0;
     }
+    
+    const userId = req.query.userId;
+    for ( const meeting of upcomingMeetings) {
+      for (const participant of meeting.participants) {
+        if (!(participant.toString() === userId.toString() || meeting.organizer.toString() === userId.toString())) {
+          upcomingMeetings.splice(upcomingMeetings.indexOf(meeting), 1);
+        }
+      }
+    }
 
     const meeting_ids = upcomingMeetings.map(meeting => meeting._id.toString());
     const usernames = await getNames(upcomingMeetings);
@@ -398,7 +407,6 @@ async function getUpcomingMeetings(req, res) {
     const dates = await getDates(upcomingMeetings);
     const times = await getTimes(upcomingMeetings);
 
-    console.log(usernames);
     res.json({
       meeting_ids,
       usernames,
@@ -412,6 +420,31 @@ async function getUpcomingMeetings(req, res) {
   }
 }
 
+async function voteOnTimeSlot(req, res) {
+  try {
+    const { meeting_id, userId, timeSlotId } = req.body;
+
+    const recieved_meeting = await Meeting.findById(meeting_id);
+
+    for (const invite of recieved_meeting.invites) {
+      const inviteObj = await Invite.findById(invite);
+      if (inviteObj.participant.toString() === userId.toString() && inviteObj.timeSlot.toString() === timeSlotId.toString()) {
+        // add vote to timeslot condition
+        inviteObj.vote = 'yes';
+      }
+      else if (inviteObj.participant.toString() === userId.toString() && inviteObj.timeSlot.toString() !== timeSlotId.toString()) {
+        // other timeslots should equal no
+        inviteObj.vote = 'no';
+      }
+    }
+
+    res.status(200).json({ message: 'Vote updated' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error updating votes' });
+  }
+}
+
 module.exports = {
     createMeeting,
     getMeetings,
@@ -422,5 +455,6 @@ module.exports = {
     getPendingMeetings,
     getHostedMeetings,
     getUpcomingMeetings,
+    voteOnTimeSlot,
     getMeetingByIdDetailed
 }

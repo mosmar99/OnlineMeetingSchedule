@@ -11,6 +11,7 @@ router.get('/detailed/:id', controller.getMeetingByIdDetailed);
 router.get('/:id', controller.getMeetingById);
 router.post('/', controller.createMeeting);
 router.delete('/:id', controller.deleteMeeting);
+router.patch('/vote/', controller.voteOnTimeSlot);
 router.patch('/:id', controller.updateMeeting);
 
 module.exports = router;
