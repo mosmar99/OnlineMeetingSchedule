@@ -173,6 +173,39 @@ async function getOrgTitles(meetings) {
   }
 }
 
+async function getOrgDescriptions(meetings) {
+  try {
+    const organizerDesc = meetings.map(meeting => meeting.description);
+    return organizerDesc;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Error finding meetings organizer titles');
+  }
+}
+
+async function getOrgParticipants(meetings) {
+  try {
+    let organizerParticipants = meetings.map(meeting => meeting.participants);
+
+    for (let j = 0; j < organizerParticipants.length; j++) {
+      let participants = []
+
+      for (let i = 0; i < organizerParticipants[j].length; i++) {
+        participants[i] = (await User.findOne({ "_id": organizerParticipants[j][i] })).username;
+      }
+
+      organizerParticipants[j] = participants;
+    }
+
+    
+
+    return organizerParticipants;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Error finding meetings organizer titles');
+  }
+}
+
 async function getOrgDates(meetings) {
   try {
     const timeRanges = [];
@@ -250,13 +283,17 @@ async function getPendingMeetings(req, res) {
 
     const meeting_ids = matchingMeetings.map(meeting => meeting._id.toString());
     const usernames = await getOrgNames(matchingMeetings);
+    const descriptions = await getOrgDescriptions(matchingMeetings);
     const titles = await getOrgTitles(matchingMeetings);
     const dates = await getOrgDates(matchingMeetings);
     const times = await getOrgTimes(matchingMeetings);
+    const participants = await getOrgParticipants(matchingMeetings);
 
     res.json({
       meeting_ids,
       usernames,
+      descriptions,
+      participants,
       titles,
       dates,
       times

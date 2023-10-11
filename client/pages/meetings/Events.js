@@ -1,9 +1,9 @@
 import "./Events.css";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import useFetch from "../../utils/useFetch";
 import MeetingsHeader from "../../components/MeetingsHeader";
 import MeetingInfoModal from "../../components/MeetingInfo";
-import axios from "axios";
+import { Fragment } from "react";
 
 
 const ChipButton = ({title, active, number, onClick}) => {
@@ -24,26 +24,41 @@ function Events({ user }) {
     if (loadingPending || loadingHosted)
         return <div><MeetingsHeader activePage="events"/></div>
 
+    // Transpose received data into a common object form.
+    const transposeEvents = events => {
+        const transposedEvents = []
+
+        Object.keys(events).map(key => {
+            for (let i = 0; i < events[key].length; i++) {
+                if (transposedEvents[i] === undefined) transposedEvents[i] = {};
+
+                transposedEvents[i][key] = events[key][i];
+            }
+        })
+
+        return transposedEvents;
+    }
+    
     const views = [
         {
             name: "upcoming",
             title: "Upcoming",
-            events: [],
+            events: []
         },
         {
             name: "pending",
             title: "Pending",
-            events: pending || [],
+            events: pending ? transposeEvents(pending) : [],
         },
         {
             name: "hosted",
             title: "Hosted",
-            events: hosted || [],
+            events: hosted,
         }
     ]
     
-    // Set up current view
-    const events = views.find(v => v.name === view).events;
+    // Set up current view.
+    const activeView = views.find(v => v.name === view);
 
     return (
         <div>
@@ -73,19 +88,43 @@ function Events({ user }) {
                     <div id="events-list">
                         <div id="events-list-header">
                             <span>Title</span>
-                            <span>Date</span>
-                            <span>Time</span>
+                            {activeView.name === "pending" ? (
+                                <span style={{gridColumnStart: 2, gridColumnEnd: 4}}>Available timeslots</span>
+                            ) : (
+                                <Fragment>
+                                    <span>Date</span>
+                                    <span>Time</span>
+                                </Fragment>
+                            )} 
                             <span>Host</span>
                         </div>
-                        {events.map(event => (
+                        {activeView.events.map(event => (
                             <div className="events-list-item" key={event._id}> 
-                                <span onClick={() => setInfoModal(event)}>{event.title}</span>
-                                <span>N/A</span>
-                                <span>N/A</span>
-                                <span>{event.organizer?.username || "N/A"}</span>
+                                <span onClick={() => setInfoModal(event)}>{event.titles}</span>
+                                {activeView.name === "pending" ? (
+                                    <span style={{gridColumnStart: 2, gridColumnEnd: 4}}>
+                                        <ul>
+                                            {(() => {
+                                                let timeSlots = [];
+                                                for (let i = 0; i < event.dates.length; i++) {
+                                                    timeSlots.push(`${event.times[i]}, ${event.dates[i]}`)
+                                                }
+                                                return timeSlots.map(timeSlot => {
+                                                    return <li className="events-list-timeslot">{timeSlot}</li>
+                                                })
+                                            })()}
+                                        </ul>
+                                    </span>
+                                ) : (
+                                    <Fragment>
+                                        <span>{event.dates[0]}</span>
+                                        <span>{event.times[0]}</span>
+                                    </Fragment>
+                                )} 
+                                <span>{event.usernames}</span>
                             </div>
                         ))}
-                        {!events.length && (
+                        {!activeView.events.length && (
                             <div id="events-none-found">
                                 No {view} events.
                             </div>
@@ -95,7 +134,7 @@ function Events({ user }) {
                 </div>
             </div>
             {infoModal && (
-                <MeetingInfoModal {...infoModal} onExit={() => setInfoModal(null)}/>
+                <MeetingInfoModal {...infoModal} showTimeslots={activeView.name === "pending"} onExit={() => setInfoModal(null)}/>
             )}
         </div>
     )
