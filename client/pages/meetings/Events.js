@@ -1,5 +1,5 @@
 import "./Events.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useFetch from "../../utils/useFetch";
 import MeetingsHeader from "../../components/MeetingsHeader";
 import MeetingInfoModal from "../../components/MeetingInfo";
@@ -19,7 +19,8 @@ function Events() {
     const [view, setView] = useState("upcoming");
     const [infoModal, setInfoModal] = useState(null);
     const {data, isPending} = useFetch("/api/meetings/detailed");
-
+    const [votes, setVotes] = useState([]);
+    
     if (isPending) {
         return (
             <div>
