@@ -273,7 +273,19 @@ async function getHostedMeetings(req, res) {
     
     const meetings = await Meeting.find({ organizer: new ObjectId(userId) });
 
-    res.json(meetings);
+    const meeting_ids = meetings.map(meeting => meeting._id.toString());
+    const usernames = await getOrgNames(meetings);
+    const titles = await getOrgTitles(meetings);
+    const dates = await getOrgDates(meetings);
+    const times = await getOrgTimes(meetings);
+
+    res.json({
+      meeting_ids,
+      usernames,
+      titles,
+      dates,
+      times
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error finding meetings with filtered time slots' });
