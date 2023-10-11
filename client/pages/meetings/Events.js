@@ -1,8 +1,10 @@
 import "./Events.css";
-import { useState, Fragment, useEffect} from "react";
+import { useState,  } from "react";
 import useFetch from "../../utils/useFetch";
 import MeetingsHeader from "../../components/MeetingsHeader";
 import MeetingInfoModal from "../../components/MeetingInfo";
+import MeetingVoteModal from "../../components/MeetingVote";
+import { Fragment } from "react";
 import axios from "axios";
 import {Menu, MenuItem} from "@mui/material";
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
@@ -23,34 +25,53 @@ function Events({ user }) {
     const [view, setView] = useState("upcoming");
     const [infoModal, setInfoModal] = useState(null);
     const [editModal, setEditModal] = useState(null);
+    const [voteModal, setVoteModal] = useState(null);
     const {data: pending, isPending: loadingPending} = useFetch("/api/meetings/pending", { userId: user._id });
     const {data: hosted, isPending: loadingHosted} = useFetch("/api/meetings/hosted", { userId: user._id });
 
     if (loadingPending || loadingHosted)
         return <div><MeetingsHeader activePage="events"/></div>
 
+    // Transpose received data into a common object form.
+    const transposeEvents = events => {
+        const transposedEvents = []
+
+        Object.keys(events).map(key => {
+            for (let i = 0; i < events[key].length; i++) {
+                if (transposedEvents[i] === undefined) transposedEvents[i] = {};
+                transposedEvents[i][key] = events[key][i];
+            }
+        })
+
+        return transposedEvents;
+    }
+
+    console.log(hosted)
+    
     const views = [
         {
             name: "upcoming",
             title: "Upcoming",
-            events: [],
+            events: []
         },
         {
             name: "pending",
             title: "Pending",
-            events: (pending !== undefined ? pending : []),
+            events: pending ? transposeEvents(pending) : [],
         },
         {
             name: "hosted",
             title: "Hosted",
-            events: (hosted !== undefined ? hosted : []),
+            events: hosted ? transposeEvents(hosted) : [],
         }
     ]
+    
+    // Set up current view.
+    const activeView = views.find(v => v.name === view);
 
-    //console.log("pending", pending)
-    console.log
     // Set up current view
     const events = views.find(v => v.name === view).events;
+    console.log(activeView.events)
 
     let vname;
 
@@ -82,16 +103,18 @@ function Events({ user }) {
                     <div id="events-list">
                         <div id="events-list-header">
                             <span>Title</span>
-                            <span>Date</span>
-                            <span>Time</span>
+                            {activeView.name === "pending" ? (
+                                <span style={{gridColumnStart: 2, gridColumnEnd: 4}}>Available timeslots</span>
+                            ) : (
+                                <Fragment>
+                                    <span>Date</span>
+                                    <span>Time</span>
+                                </Fragment>
+                            )} 
                             <span>Host</span>
                         </div>
-                        {events.map(event => (
+                        {activeView.events.filter(event => event.dates).map(event => (
                             <div className="events-list-item" key={event._id}> 
-                                <span onClick={() => setInfoModal(event)}>{event.title}</span>
-                                <span>N/A</span>
-                                <span>N/A</span>
-                                <span>{event.organizer?.username || "N/A"}</span>
                                 <div className="events-list-item-dots">
                                     <PopupState variant="popover" popupId="demo-popup-menu">
                                         {(popupState) => (
@@ -117,10 +140,36 @@ function Events({ user }) {
                                             </Fragment>
                                         )}
                                     </PopupState> 
-                                </div>                               
+                                </div>                                       
+                                <span onClick={() => {
+                                    if (activeView.name === "pending") setVoteModal(event)
+                                    else setInfoModal(event)
+                                }}
+                                >{event.titles}</span>
+                                {activeView.name === "pending" ? (
+                                    <span style={{gridColumnStart: 2, gridColumnEnd: 4}}>
+                                        <ul>
+                                            {(() => {
+                                                let timeSlots = [];
+                                                for (let i = 0; i < event.dates.length; i++) {
+                                                    timeSlots.push(`${event.times[i]}, ${event.dates[i]}`)
+                                                }
+                                                return timeSlots.map(timeSlot => {
+                                                    return <li className="events-list-timeslot">{timeSlot}</li>
+                                                })
+                                            })()}
+                                        </ul>
+                                    </span>
+                                ) : (
+                                    <Fragment>
+                                        <span>{event?.dates[0]}</span>
+                                        <span>{event?.times[0]}</span>
+                                    </Fragment>
+                                )} 
+                                <span>{event.usernames}</span>
                             </div>
                         ))}
-                        {!events.length && (
+                        {!activeView.events.length && (
                             <div id="events-none-found">
                                 No {view} events.
                             </div>
@@ -134,6 +183,8 @@ function Events({ user }) {
             )}
             {editModal &&(
                 <EditMeetingModal {...editModal} onExit={() => setEditModal(null)}></EditMeetingModal>
+            {voteModal && (
+                <MeetingVoteModal {...voteModal} onExit={() => setVoteModal(null)}/>
             )}
         </div>
     )

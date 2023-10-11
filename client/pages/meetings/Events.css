@@ -51,7 +51,8 @@
 
 #events-list > * {
     display: grid;
-    grid-template-columns: 3fr 2fr 2fr 2fr;
+    grid-template-columns: 4fr 3fr 3fr 3fr;
+    align-items: center;
 }
 
 #events-list-header {
@@ -109,6 +110,9 @@
 
 .events-list-item-dots:hover > svg > path {
     fill: #5A6AFF;
+}
+.events-list-timeslot:not(:last-child) {
+    margin-bottom: 10px;
 }
 
 #events-none-found {

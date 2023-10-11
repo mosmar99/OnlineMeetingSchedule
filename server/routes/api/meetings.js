@@ -4,6 +4,7 @@ const controller = require("../../controllers/meetings");
 
 router.get('/pending/', controller.getPendingMeetings);
 router.get('/hosted/', controller.getHostedMeetings);
+router.get('/upcoming/', controller.getUpcomingMeetings);
 router.get('/', controller.getMeetings);
 router.get('/detailed/', controller.getMeetingsDetailed);
 router.get('/:id', controller.getMeetingById);

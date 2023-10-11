@@ -7,19 +7,17 @@ const useFetch = (url, params) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        
-        console.log("here")
         axios
-        .get(url, { params: (params || {}) })
-        .then(res => { 
-            setData(res.data);
-            setIsPending(false);
-            setError(null);
-        })
-        .catch(err => {
-            setIsPending(false);
-            setError(err.message);
-        })
+            .get(url, { params: (params || {}) })
+            .then(res => { 
+                setData(res.data);
+                setIsPending(false);
+                setError(null);
+            })
+            .catch(err => {
+                setIsPending(false);
+                setError(err.message);
+            })
     }, [url])
     
     return {data, isPending, error};
