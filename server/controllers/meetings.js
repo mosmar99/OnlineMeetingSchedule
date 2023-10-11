@@ -5,6 +5,18 @@ const TimeSlot = require("../models/timeSlots")
 const mongoose = require('mongoose');
 const { ObjectId } = require('mongodb');
 
+function formatDate(startTime, endTime) {
+  const startDate = startTime.replace(/"/g, '').split('T')[0];
+  const endDate = endTime.replace(/"/g, '').split('T')[0];
+  return `${startDate} to ${endDate}`;
+}
+
+function formatTime(startTime, endTime) {
+  const startHourMinute = startTime.split('T')[1].substring(0, 5);
+  const endHourMinute = endTime.split('T')[1].substring(0, 5);
+  return `${startHourMinute} to ${endHourMinute}`;
+}
+
 // Create a new meeting
 async function createMeeting(req, res) {
     const { organizer, participants, title, description, timeSlots, invites } = req.body;
@@ -77,6 +89,43 @@ async function getMeetingById(req, res) {
   }
 }
 
+async function getMeetingByIdDetailed(req, res) {
+  const id = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    res.status(404).json({ message: 'Meeting not found' });
+    return;
+  }
+
+  try {
+    const meeting = await Meeting.findById(id);
+
+    if (!meeting) {
+      res.status(404).json({ message: 'Meeting not found' });
+      return;
+    }
+
+    let response = {
+      _id: meeting._id,
+      title: meeting.title,
+      description: meeting.description,
+      organizer: await User.findOne({ _id: meeting.organizer }),
+      participants: await Promise.all(meeting.participants.map(async (participant) => (await User.findOne({ _id: participant })))),
+      timeSlots: await Promise.all(meeting.timeSlots.map(async (timeSlot) => {
+        const timeslot = await TimeSlot.findOne({ _id: timeSlot });
+
+        return { 
+          date: formatDate(timeslot.startTime, timeslot.endTime), 
+          time: formatTime(timeslot.startTime, timeslot.endTime)
+        }
+      })),
+    }
+
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
 // Update a meeting by ID
 async function updateMeeting(req, res) {
   const id = req.params.id;
@@ -214,9 +263,7 @@ async function getDates(meetings) {
           meeting.timeSlots.map(async timeslotId => {
             const timeslot = await TimeSlot.findById(timeslotId);
             if (timeslot && timeslot.startTime && timeslot.endTime) {
-              const startDate = timeslot.startTime.replace(/"/g, '').split('T')[0];
-              const endDate = timeslot.endTime.replace(/"/g, '').split('T')[0];
-              return `${startDate} to ${endDate}`;
+              return formatDate(timeslot.startTime, timeslot.endTime)
             }
             return null;
           })
@@ -246,9 +293,7 @@ async function getTimes(meetings) {
           meeting.timeSlots.map(async timeslotId => {
             const timeslot = await TimeSlot.findById(timeslotId);
             if (timeslot && timeslot.startTime && timeslot.endTime) {
-              const startHourMinute = timeslot.startTime.split('T')[1].substring(0, 5);
-              const endHourMinute = timeslot.endTime.split('T')[1].substring(0, 5);
-              return `${startHourMinute} to ${endHourMinute}`;
+              return formatTime(timeslot.startTime, timeslot.endTime)
             }
             return null;
           })
@@ -377,4 +422,5 @@ module.exports = {
     getPendingMeetings,
     getHostedMeetings,
     getUpcomingMeetings,
+    getMeetingByIdDetailed
 }

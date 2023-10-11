@@ -3,13 +3,13 @@ import { useState,  } from "react";
 import useFetch from "../../utils/useFetch";
 import MeetingsHeader from "../../components/MeetingsHeader";
 import MeetingInfoModal from "../../components/MeetingInfo";
-import MeetingVoteModal from "../../components/MeetingVote";
 import { Fragment } from "react";
 import axios from "axios";
 import {Menu, MenuItem} from "@mui/material";
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import EditMeetingModal from "../../components/EditMeeting";
+import { Navigate } from "react-router-dom";
 
 
 const ChipButton = ({title, active, number, onClick}) => {
@@ -45,8 +45,6 @@ function Events({ user }) {
 
         return transposedEvents;
     }
-
-    console.log(hosted)
     
     const views = [
         {
@@ -68,11 +66,6 @@ function Events({ user }) {
     
     // Set up current view.
     const activeView = views.find(v => v.name === view);
-
-    // Set up current view
-    const events = views.find(v => v.name === view).events;
-    console.log(activeView.events)
-
 
     return (
         <div>
@@ -180,10 +173,10 @@ function Events({ user }) {
                 <MeetingInfoModal {...infoModal} onExit={() => setInfoModal(null)}/>
             )}
             {editModal &&(
-                <EditMeetingModal {...editModal} onExit={() => setEditModal(null)}></EditMeetingModal>
+                <EditMeetingModal {...editModal} onExit={() => setEditModal(null)}/>
             )}
             {voteModal && (
-                <MeetingVoteModal {...voteModal} onExit={() => setVoteModal(null)}/>
+                <Navigate to={"/meetings/vote/"+voteModal.meeting_ids} />
             )}
         </div>
     )
