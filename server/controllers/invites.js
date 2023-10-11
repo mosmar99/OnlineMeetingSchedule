@@ -85,7 +85,6 @@ async function updateInvite(req, res) {
   }
 }
 
-
 // Controller function to delete an invite by ID
 async function deleteInvite(req, res) {
   try {
