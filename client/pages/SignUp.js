@@ -24,7 +24,7 @@ const SignUp = ({ setUser }) => {
         });
     };
 
-    const handleSubmit = e =>{
+    const handleSubmit = async e =>{
         e.preventDefault();
 
         let error = (!formInput.username || !isValidEmail(formInput.email) || (!isValidPassword(formInput.password) || formInput.password !== password2))
@@ -35,7 +35,11 @@ const SignUp = ({ setUser }) => {
 
         if (error) return;
 
-        axios.post( "/api/users/signup", formInput)
+        let postData = {
+            email: formInput.email.toLowerCase()
+        }
+
+        axios.post( "/api/users/signup", postData)
             .then(res => {
                 setUser(res.data);
                 navigate("/meetings/events");
