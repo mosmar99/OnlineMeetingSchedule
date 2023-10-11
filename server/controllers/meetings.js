@@ -375,6 +375,31 @@ async function getUpcomingMeetings(req, res) {
   }
 }
 
+async function voteOnTimeSlot(req, res) {
+  try {
+    const { meeting_id, userId, timeSlotId } = req.body;
+
+    const recieved_meeting = await Meeting.findById(meeting_id);
+
+    for (const invite of recieved_meeting.invites) {
+      const inviteObj = await Invite.findById(invite);
+      if (inviteObj.participant.toString() === userId.toString() && inviteObj.timeSlot.toString() === timeSlotId.toString()) {
+        // add vote to timeslot condition
+        inviteObj.vote = 'yes';
+      }
+      else if (inviteObj.participant.toString() === userId.toString() && inviteObj.timeSlot.toString() !== timeSlotId.toString()) {
+        // other timeslots should equal no
+        inviteObj.vote = 'no';
+      }
+    }
+
+    res.status(200).json({ message: 'Vote updated' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error updating votes' });
+  }
+}
+
 module.exports = {
     createMeeting,
     getMeetings,
@@ -385,4 +410,5 @@ module.exports = {
     getPendingMeetings,
     getHostedMeetings,
     getUpcomingMeetings,
+    voteOnTimeSlot,
 }
