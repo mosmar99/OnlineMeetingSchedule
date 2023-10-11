@@ -90,23 +90,27 @@ function Events({ user }) {
                                 <span>N/A</span>
                                 <span>N/A</span>
                                 <span>{event.organizer?.username || "N/A"}</span>
-                                <PopupState variant="popover" popupId="demo-popup-menu">
-                                    {(popupState) => (
-                                        <Fragment>
-                                            <MoreHorizIcon {...bindTrigger(popupState)}></MoreHorizIcon>
-                                            <Menu {...bindMenu(popupState)}>
-                                                <MenuItem onClick={() => {popupState.close();
-                                                    setEditModal(event);
-                                                }} name="info">Info</MenuItem>
-                                                {organizer == event.host && view.name != "upcoming" &&
-                                                    <MenuItem onClick={() => {popupState.close();
-                                                        
-                                                    }} name="edit">Edit</MenuItem>
-                                                }
-                                            </Menu>
-                                        </Fragment>
-                                    )}
-                                </PopupState>                                
+                                <div className="events-list-item-dots">
+                                    <PopupState variant="popover" popupId="demo-popup-menu">
+                                        {(popupState) => (
+                                            <Fragment>
+                                                <MoreHorizIcon {...bindTrigger(popupState)}></MoreHorizIcon>
+                                                <Menu {...bindMenu(popupState)}>
+                                                    <MenuItem onClick={() => {
+                                                        popupState.close();
+                                                        setEditModal(event);
+                                                    }} name="info">Info</MenuItem>
+                                                    {event.organizer == event.host && view.name != "upcoming" &&
+                                                        <MenuItem 
+                                                            onClick={() => popupState.close()} 
+                                                            name="edit"
+                                                        >Edit</MenuItem>
+                                                    }
+                                                </Menu>
+                                            </Fragment>
+                                        )}
+                                    </PopupState>   
+                                </div>                             
                             </div>
                         ))}
                         {!events.length && (
