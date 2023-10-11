@@ -29,20 +29,22 @@ const Profile = ({ user }) => {
 
     const displayInfo = () => {
         return (
-            
-            <TextField variant="standard" disabled label={"username"} value={user.username}/>
-            
+            <>
+                <Typography variant="h5" children={user.username}/>
+                <Typography variant="h6" children={"email: " + user.email}/>
+                <Typography variant="h6" children={`name: ${user.firstName} ${user.lastName}`}/>
+            </>
         );
     }
 
     return ( 
         <>
             <Stack alignItems={"center"} margin={"50px"} spacing={3}>
-                <Avatar alt={user.firstname} sx={{height: 136, width:136, marginBottom:"50px"}}></Avatar>
+                <Avatar alt={user.firstname} sx={{height: 136, width:136}}></Avatar>
                 {editProfile ? editInfo() : displayInfo()}
                 <Button variant="contained" onClick={() => {setEditProfile(!editProfile)}}>{editProfile ? "Save changes" : "Edit Profile"}</Button>
             </Stack>
-            
+
         </>
     );
 }
