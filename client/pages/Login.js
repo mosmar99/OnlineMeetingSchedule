@@ -28,7 +28,7 @@ const Login = ({ setUser }) => {
         axios.post("/api/users/login", postData)
             .then(res => {
                 setUser(res.data);
-                navigate("/meetings/calendar");
+                navigate("/meetings/events");
             })
             .catch(res => {
                 alert("Failed to signup.")
