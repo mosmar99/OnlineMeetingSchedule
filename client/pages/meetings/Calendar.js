@@ -33,11 +33,13 @@ const getVisualMonth = selectedMonth => {
 }
 
 const Calendar = () => {
-    const {data, isPending} = useFetch("http://localhost:3000/api/meetings/");
+    let {data, isPending, error} = useFetch("http://localhost:3000/api/meetings");
     const [viewedMonth, setViewedMonth] = useState(new Date());
 
     if (isPending)
         return <MeetingsHeader activePage="calendar" />
+
+    if (!data) data = []
 
     const meetings = data.map(item => ({...item, startDate: new Date(item.startDate), endDate: new Date(item.endDate)}))
     const visualMonth = getVisualMonth(viewedMonth);
