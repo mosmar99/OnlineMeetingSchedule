@@ -1,15 +1,24 @@
 import { useNavigate, useParams } from "react-router-dom";
 import "./Vote.css";
 import useFetch from "../../utils/useFetch";
+import axios from "axios";
 
-function MeetingVote() {
+function MeetingVote({ user }) {
     const { id } = useParams();
     const navigator = useNavigate();
-    const {data, isPending} = useFetch("/api/meetings/detailed/"+id);
+    const {data, isPending, refresh} = useFetch("/api/meetings/detailed/"+id);
 
-    if (isPending) return <div></div>
+    if (isPending || !data) return <div></div>
 
-    console.log(data)
+    const vote = timeslot => {
+        axios.patch("/api/meetings/vote/", { params: {
+            meeting_id: id,
+            userId: user._id,
+            timeSlotId: timeslot._id
+        }})
+
+        refresh();
+    }
 
     return (
         <div id="meeting-vote">
@@ -43,18 +52,26 @@ function MeetingVote() {
                 <div>
                     <h2>Dates and time</h2>
                     <div id="meeting-vote-timeslots-options">
-                        {data.timeSlots.map(timeslot => (
-                            <div>
-                                <div className="meeting-vote-timeslot-info">
-                                    <div>
-                                        <h3>{timeslot.time}</h3>
-                                        <p>{timeslot.date}</p>
+                        {data.timeSlots.map(timeslot => {
+                            const isVoted = timeslot.usersVoted.includes(user._id)
+                            
+                            return (
+                                <div>
+                                    <div className="meeting-vote-timeslot-info">
+                                        <div>
+                                            <h3>{timeslot.time}</h3>
+                                            <p>{timeslot.date}</p>
+                                        </div>
+                                        <p>Votes: <b>{timeslot.votes}</b></p>
                                     </div>
-                                    <p>Votes: ?</p>
+                                    <div 
+                                        className={isVoted ? "meeting-vote-voted-button" : "meeting-vote-vote-button"}
+                                        onClick={() => vote(timeslot)}>
+                                        {isVoted ? "Voted" : "Vote"}
+                                    </div>
                                 </div>
-                                <div className="meeting-vote-vote-button">Vote</div>
-                            </div>
-                        ))}
+                            )
+                        })}
                     </div>
                 </div>
             </div>

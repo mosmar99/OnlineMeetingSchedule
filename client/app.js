@@ -38,8 +38,8 @@ export const App = () => {
                         
                         {/* Meetings */}
                         <Route path='/meetings/events' element={cookies.user ? <Events user={cookies.user} /> : <Navigate to="/login"/>}/>
-                        <Route path='/meetings/calendar' element={cookies.user ? <Calendar/> : <Navigate to="/login"/>}/>
-                        <Route path='/meetings/vote/:id' element={cookies.user ? <MeetingVote/> : <Navigate to="/login"/>}/>
+                        <Route path='/meetings/calendar' element={cookies.user ? <Calendar user={cookies.user}/> : <Navigate to="/login"/>}/>
+                        <Route path='/meetings/vote/:id' element={cookies.user ? <MeetingVote user={cookies.user} /> : <Navigate to="/login"/>}/>
                         
                         {/* Authentication */}
                         <Route path='/login' element={cookies.user ? <Navigate to="/calendar"/> : <Login setUser={setUser}/>}/>

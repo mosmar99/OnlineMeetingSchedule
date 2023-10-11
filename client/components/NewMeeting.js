@@ -16,7 +16,6 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 function NewMeetingModal({ onClose }) {
     const [nmtitle, setTitle] = useState("");
     const [nmdesc, setDesc]   = useState("");
-    const [place, setPlace] = useState("");
 
     const [timeList, setTimeList] = useState([{time: [dayjs(), dayjs()]}]);
 
@@ -54,6 +53,7 @@ function NewMeetingModal({ onClose }) {
         for (let i = 0; i < timeList.length; i++){
             times.startTime = JSON.stringify(timeList[i][0]);
             times.endTime = JSON.stringify(timeList[i][1]);
+            
             axios
                 .post("/api/timeSlots", times)
                 .then(res=>{
@@ -63,6 +63,8 @@ function NewMeetingModal({ onClose }) {
                             timeSlot: res.data._id,
                             vote: "maybe"
                         }
+                        
+                        console.log(invite)
                         axios.post("/api/invites", invite).then(res => { nminvites.push(res.data._id) })
                     }
                     nmtimeSlots.push(res.data._id);
@@ -99,7 +101,7 @@ function NewMeetingModal({ onClose }) {
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <Dialog open = {open}>
                 <DialogTitle>
-                    <p id="newMeet-h1">Add a new meeting</p>
+                    <p id="newMeet-h1" style={{ marginBottom: "0" }}>Add a new meeting</p>
                     <Button variant='contained' id="newMeet-close" onClick={onClose}>X</Button>
                 </DialogTitle>
                 <DialogContent>
@@ -108,14 +110,13 @@ function NewMeetingModal({ onClose }) {
 
                             {/*INFORMATION ABOUT MEETING*/}
                             <TextField id="newMeet-title" variant="outlined" label="Title" required margin="dense" fullWidth={true}  value={nmtitle} onChange={e => setTitle(e.target.value)}></TextField>
-                            <TextField id="newMeet-description" variant="outlined" label="Description" required margin="dense" fullWidth={true}   value={nmdesc} onChange={e => setDesc(e.target.value)}></TextField>
-                            <TextField id="newMeet-place" variant="outlined" label="Place" required margin="dense" fullWidth={true}   value={place} onChange={e => setPlace(e.target.value)}></TextField>
+                            <TextField id="newMeet-description" variant="outlined" label="Description" minRows={6} required multiline margin="dense" fullWidth={true}   value={nmdesc} onChange={e => setDesc(e.target.value)}></TextField>
 
                             {/*ADD USERS TO MEETING*/}
                             {users != null &&
                                 <Autocomplete
                                     onChange={(_, value) => setParticipantList(value)}
-                                    sx={{marginTop: 1, width:20}}
+                                    sx={{marginTop: 1}}
                                     fullWidth={true}
                                     multiple
                                     options={users}

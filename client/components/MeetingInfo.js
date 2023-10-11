@@ -3,6 +3,8 @@ import "./MeetingInfo.css";
 function MeetingInfoModal({titles, descriptions, dates, times, usernames, participants, onExit}) {
     const allParticipants = [usernames+" (host)", ...participants];
     
+    console.log(times, dates)
+
     return (
         <div id="meeting-info-modal">
             <div id="meeting-info-modal-top">

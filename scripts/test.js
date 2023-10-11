@@ -1,11 +1,1 @@
-const axios = require("axios");
-
-axios
-    .get("http://localhost:3000/api/meetings")
-    .then(res => {
-        console.log("res", res.data);
-        console.log(res.data[0].startDate)
-    })
-    .catch(err => {
-        console.log("catch", err)
-    })
+console.log(new Date(Date.parse("2023-10-13T02:00:00.000Z".replace("\"", ""))))

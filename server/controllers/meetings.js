@@ -113,10 +113,14 @@ async function getMeetingByIdDetailed(req, res) {
       participants: await Promise.all(meeting.participants.map(async (participant) => (await User.findOne({ _id: participant })))),
       timeSlots: await Promise.all(meeting.timeSlots.map(async (timeSlot) => {
         const timeslot = await TimeSlot.findOne({ _id: timeSlot });
+        const votes = await Invite.find({ timeSlot: timeSlot, vote: "yes"});
 
         return { 
           date: formatDate(timeslot.startTime, timeslot.endTime), 
-          time: formatTime(timeslot.startTime, timeslot.endTime)
+          time: formatTime(timeslot.startTime, timeslot.endTime),
+          votes: votes.length,
+          usersVoted: [...new Set(votes.map(vote => vote.participant))],
+          _id: timeslot._id
         }
       })),
     }
@@ -283,6 +287,33 @@ async function getDates(meetings) {
   }
 }
 
+async function getDateTimes(meetings) {
+  try {
+    const timeRanges = [];
+
+    for (const meeting of meetings) {
+      if (meeting.timeSlots && Array.isArray(meeting.timeSlots)) {
+        const meetingTimeRanges = await Promise.all(
+          meeting.timeSlots.map(async timeslotId => {
+            const timeslot = await TimeSlot.findById(timeslotId);
+            return [timeslot.startTime, timeslot.endTime];
+          })
+        );
+
+        const filteredMeetingTimeRanges = meetingTimeRanges.filter(timeRange => timeRange !== null);
+        if (filteredMeetingTimeRanges.length > 0) {
+          timeRanges.push(filteredMeetingTimeRanges);
+        }
+      }
+    }
+
+    return timeRanges;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Error getting time ranges for meetings');
+  }
+}
+
 async function getTimes(meetings) {
   try {
     const timeRanges = [];
@@ -386,6 +417,7 @@ async function getUpcomingMeetings(req, res) {
           count++;
         }
       }
+
       if (count === meeting.participants.length && count !== 0) {
         upcomingMeetings.push(meeting);
       }
@@ -402,16 +434,24 @@ async function getUpcomingMeetings(req, res) {
     }
 
     const meeting_ids = upcomingMeetings.map(meeting => meeting._id.toString());
+    const descriptions = await getDescriptions(upcomingMeetings);
     const usernames = await getNames(upcomingMeetings);
     const titles = await getTitles(upcomingMeetings);
     const dates = await getDates(upcomingMeetings);
     const times = await getTimes(upcomingMeetings);
+    const participants = await getParticipants(upcomingMeetings);
+
+    const dateTimes = await getDateTimes(upcomingMeetings)
 
     res.json({
       meeting_ids,
+      descriptions,
       usernames,
+      participants,
       titles,
       dates,
+      startTime: dateTimes.map(dateTime => dateTime[0][0]),
+      endTime: dateTimes.map(dateTime => dateTime[0][1]),
       times
     });
   } catch (error) {
@@ -422,12 +462,15 @@ async function getUpcomingMeetings(req, res) {
 
 async function voteOnTimeSlot(req, res) {
   try {
-    const { meeting_id, userId, timeSlotId } = req.body;
+    const { meeting_id, userId, timeSlotId } = req.body.params;
 
     const recieved_meeting = await Meeting.findById(meeting_id);
 
+    console.log(recieved_meeting, meeting_id, userId, timeSlotId)
+
     for (const invite of recieved_meeting.invites) {
-      const inviteObj = await Invite.findById(invite);
+      const inviteObj = await Invite.findOne({ _id: invite });
+      
       if (inviteObj.participant.toString() === userId.toString() && inviteObj.timeSlot.toString() === timeSlotId.toString()) {
         // add vote to timeslot condition
         inviteObj.vote = 'yes';
@@ -436,6 +479,8 @@ async function voteOnTimeSlot(req, res) {
         // other timeslots should equal no
         inviteObj.vote = 'no';
       }
+
+      inviteObj.save();
     }
 
     res.status(200).json({ message: 'Vote updated' });
