@@ -73,7 +73,6 @@ function Events({ user }) {
     const events = views.find(v => v.name === view).events;
     console.log(activeView.events)
 
-    let vname;
 
     return (
         <div>
@@ -122,18 +121,17 @@ function Events({ user }) {
                                                 <MoreHorizIcon {...bindTrigger(popupState)}></MoreHorizIcon>
                                                 <Menu {...bindMenu(popupState)}>
                                                     <MenuItem onClick={() => {popupState.close();
+                                                        console.log(event);
                                                         setInfoModal(event);
-                                                        console.log(event.organizer);
-                                                        console.log(user._id);
                                                     }} name="info">Info</MenuItem>
-                                                    {event.organizer == user._id && view == "hosted" &&
+                                                    {activeView.name === "hosted" &&
                                                         <MenuItem onClick={() => {popupState.close();
                                                             setEditModal(event);
                                                         }} name="edit">Edit</MenuItem>
                                                     }
-                                                    {event.organizer == user._id && view == "hosted" &&
+                                                    {activeView.name === "hosted" &&
                                                         <MenuItem onClick={() => {popupState.close();
-                                                            axios.delete("/api/meetings/"+ event._id);
+                                                            axios.delete("/api/meetings/"+event.meeting_ids);
                                                         }} name="delete">Delete</MenuItem>
                                                     }
                                                 </Menu>
@@ -183,6 +181,7 @@ function Events({ user }) {
             )}
             {editModal &&(
                 <EditMeetingModal {...editModal} onExit={() => setEditModal(null)}></EditMeetingModal>
+            )}
             {voteModal && (
                 <MeetingVoteModal {...voteModal} onExit={() => setVoteModal(null)}/>
             )}

@@ -23,12 +23,13 @@ function EditMeetingModal({title, description, date, time, organizer, participan
 
         const userData = [pending];
         let users = userData[0];
-    
+        console.log("UASS " +users);
         const meetingsData = [hosted];
         const meetings = meetingsData[0];
 
         const organizerInfo = users.find(o => o._id === organizer);
-        const organizerUsername = organizerInfo.username;
+        console.log("ORGANIZER " + organizer);
+        //const organizerUsername = organizerInfo.username;
 
         //THE MEETING
 
