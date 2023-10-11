@@ -61,7 +61,7 @@ const Calendar = () => {
     return ( 
         <div>
             <MeetingsHeader activePage="calendar" />
-            <div style={{ display: "flex", justifyContent: "center"}}>
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: "50px"}}>
                 <div style={{width: "1000px"}}>
 
                     {/* Calendar controls*/}
