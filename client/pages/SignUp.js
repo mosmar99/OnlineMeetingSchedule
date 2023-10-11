@@ -35,7 +35,7 @@ const SignUp = ({ setUser }) => {
 
         if (error) return;
 
-        axios.post( "/api/users/signup", {...formInput, email: formInput.email.toLowerCase})
+        axios.post( "/api/users/signup", formInput)
             .then(res => {
                 setUser(res.data);
                 navigate("/meetings/events");
