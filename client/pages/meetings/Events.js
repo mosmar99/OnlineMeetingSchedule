@@ -33,17 +33,15 @@ function Events({ user }) {
         {
             name: "pending",
             title: "Pending",
-            events: (pending !== undefined ? pending : []),
+            events: pending || [],
         },
         {
             name: "hosted",
             title: "Hosted",
-            events: (hosted !== undefined ? hosted : []),
+            events: hosted || [],
         }
     ]
-
-    console.log("pending", pending)
-
+    
     // Set up current view
     const events = views.find(v => v.name === view).events;
 
