@@ -36,6 +36,7 @@ const SignUp = ({ setUser }) => {
         if (error) return;
 
         let postData = {
+            ...formInput,
             email: formInput.email.toLowerCase()
         }
 

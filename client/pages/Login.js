@@ -20,7 +20,12 @@ const Login = ({ setUser }) => {
     const handleSubmit = e =>{
         e.preventDefault();
 
-        axios.post("/api/users/login", formInput)
+        let postData = {
+            ...formInput,
+            email: formInput.email.toLowerCase()
+        }
+
+        axios.post("/api/users/login", postData)
             .then(res => {
                 setUser(res.data);
                 navigate("/meetings/calendar");
