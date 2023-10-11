@@ -346,6 +346,15 @@ async function getUpcomingMeetings(req, res) {
       }
       count = 0;
     }
+    
+    const userId = req.query.userId;
+    for ( const meeting of upcomingMeetings) {
+      for (const participant of meeting.participants) {
+        if (!(participant.toString() === userId.toString() || meeting.organizer.toString() === userId.toString())) {
+          upcomingMeetings.splice(upcomingMeetings.indexOf(meeting), 1);
+        }
+      }
+    }
 
     const meeting_ids = upcomingMeetings.map(meeting => meeting._id.toString());
     const usernames = await getNames(upcomingMeetings);
@@ -353,7 +362,6 @@ async function getUpcomingMeetings(req, res) {
     const dates = await getDates(upcomingMeetings);
     const times = await getTimes(upcomingMeetings);
 
-    console.log(usernames);
     res.json({
       meeting_ids,
       usernames,
