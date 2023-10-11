@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 
 async function signup(req, res) {
     try {
-        console.log(req.body);
+
         const user = await User.findOne({email: req.body.email});
 
         if (user) {

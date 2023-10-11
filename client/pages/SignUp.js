@@ -24,7 +24,7 @@ const SignUp = ({ setUser }) => {
         });
     };
 
-    const handleSubmit = async e =>{
+    const handleSubmit = e =>{
         e.preventDefault();
 
         let error = (!formInput.username || !isValidEmail(formInput.email) || (!isValidPassword(formInput.password) || formInput.password !== password2))
