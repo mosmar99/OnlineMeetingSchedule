@@ -1,6 +1,9 @@
 const Meeting = require('../models/meetings');
-const { invitesByParticipantId } = require('./invites.js'); 
+const User = require("../models/users"); 
+const Invite = require("../models/invites")
+const TimeSlot = require("../models/timeSlots")
 const mongoose = require('mongoose');
+const { ObjectId } = require('mongodb');
 
 // Create a new meeting
 async function createMeeting(req, res) {
@@ -146,19 +149,218 @@ async function findMeetingsBasedOnTimeSlots(timeSlots) {
   }
 }
 
+async function getNames(meetings) {
+  try {
+      const organizerNames = await Promise.all(meetings.map(async (meeting) => {
+      const userId = await User.findById(meeting.organizer);
+      return userId ? userId.username : null;
+    }));
+
+    return organizerNames.filter(name => name !== null);
+  } catch (error) {
+    console.error(error);
+    throw new Error('Error finding meetings organizer names');
+  }
+}
+
+async function getTitles(meetings) {
+  try {
+    const organizerTitles = meetings.map(meeting => meeting.title).filter(title => title !== null);
+    return organizerTitles;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Error finding meetings organizer titles');
+  }
+}
+
+async function getDescriptions(meetings) {
+  try {
+    const organizerDesc = meetings.map(meeting => meeting.description);
+    return organizerDesc;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Error finding meetings organizer titles');
+  }
+}
+
+async function getParticipants(meetings) {
+  try {
+    let organizerParticipants = meetings.map(meeting => meeting.participants);
+
+    for (let j = 0; j < organizerParticipants.length; j++) {
+      let participants = []
+
+      for (let i = 0; i < organizerParticipants[j].length; i++) {
+        participants[i] = (await User.findOne({ "_id": organizerParticipants[j][i] })).username;
+      }
+
+      organizerParticipants[j] = participants;
+    }
+
+    return organizerParticipants;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Error finding meetings organizer titles');
+  }
+}
+
+async function getDates(meetings) {
+  try {
+    const timeRanges = [];
+
+    for (const meeting of meetings) {
+      if (meeting.timeSlots && Array.isArray(meeting.timeSlots)) {
+        const meetingTimeRanges = await Promise.all(
+          meeting.timeSlots.map(async timeslotId => {
+            const timeslot = await TimeSlot.findById(timeslotId);
+            if (timeslot && timeslot.startTime && timeslot.endTime) {
+              const startDate = timeslot.startTime.replace(/"/g, '').split('T')[0];
+              const endDate = timeslot.endTime.replace(/"/g, '').split('T')[0];
+              return `${startDate} to ${endDate}`;
+            }
+            return null;
+          })
+        );
+
+        const filteredMeetingTimeRanges = meetingTimeRanges.filter(timeRange => timeRange !== null);
+        if (filteredMeetingTimeRanges.length > 0) {
+          timeRanges.push(filteredMeetingTimeRanges);
+        }
+      }
+    }
+
+    return timeRanges;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Error getting time ranges for meetings');
+  }
+}
+
+async function getTimes(meetings) {
+  try {
+    const timeRanges = [];
+
+    for (const meeting of meetings) {
+      if (meeting.timeSlots && Array.isArray(meeting.timeSlots)) {
+        const meetingTimeRanges = await Promise.all(
+          meeting.timeSlots.map(async timeslotId => {
+            const timeslot = await TimeSlot.findById(timeslotId);
+            if (timeslot && timeslot.startTime && timeslot.endTime) {
+              const startHourMinute = timeslot.startTime.split('T')[1].substring(0, 5);
+              const endHourMinute = timeslot.endTime.split('T')[1].substring(0, 5);
+              return `${startHourMinute} to ${endHourMinute}`;
+            }
+            return null;
+          })
+        );
+
+        const filteredMeetingTimeRanges = meetingTimeRanges.filter(timeRange => timeRange !== null);
+        if (filteredMeetingTimeRanges.length > 0) {
+          timeRanges.push(filteredMeetingTimeRanges);
+        }
+      }
+    }
+
+    return timeRanges;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Error getting time ranges for meetings');
+  }
+}
+
 // Function to find meetings with filtered time slots
 async function getPendingMeetings(req, res) {
   try {
-
-    const userId = req.params.userId;
-
-    const invites = await invitesByParticipantId(userId);
-
+    const userId = new ObjectId(req.query.userId);
+    const invites = await Invite.find({ participant: userId });
     const maybeTimeSlots = getMaybeTimeSlots(invites);
-
     const matchingMeetings = await findMeetingsBasedOnTimeSlots(maybeTimeSlots);
 
-    res.json(matchingMeetings);
+    const meeting_ids = matchingMeetings.map(meeting => meeting._id.toString());
+    const usernames = await getNames(matchingMeetings);
+    const descriptions = await getDescriptions(matchingMeetings);
+    const titles = await getTitles(matchingMeetings);
+    const dates = await getDates(matchingMeetings);
+    const times = await getTimes(matchingMeetings);
+    const participants = await getParticipants(matchingMeetings);
+
+    res.json({
+      meeting_ids,
+      usernames,
+      descriptions,
+      participants,
+      titles,
+      dates,
+      times
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error finding meetings with filtered time slots' });
+  }
+}
+
+async function getHostedMeetings(req, res) {
+  try {
+    const userId = req.query.userId;
+    const meetings = await Meeting.find({ organizer: new ObjectId(userId) });
+    
+    const meeting_ids = meetings.map(meeting => meeting._id.toString());
+    const usernames = await getNames(meetings);
+    const descriptions = await getDescriptions(meetings);
+    const titles = await getTitles(meetings);
+    const dates = await getDates(meetings);
+    const times = await getTimes(meetings);
+    const participants = await getParticipants(meetings);
+
+    res.json({
+      meeting_ids,
+      usernames,
+      descriptions,
+      participants,
+      titles,
+      dates,
+      times
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error finding meetings with filtered time slots' });
+  }
+}
+
+async function getUpcomingMeetings(req, res) {
+  try {
+
+    const upcomingMeetings = []; 
+    const meetings = await Meeting.find();
+    for (const meeting of meetings) {
+      count = 0;
+      for (const invite of meeting.invites) {
+        const inviteObj = await Invite.findById(invite);
+        if (inviteObj && inviteObj.vote === 'yes') {
+          count++;
+        }
+      }
+      if (count === meeting.participants.length && count !== 0) {
+        upcomingMeetings.push(meeting);
+      }
+      count = 0;
+    }
+
+    const meeting_ids = upcomingMeetings.map(meeting => meeting._id.toString());
+    const usernames = await getNames(upcomingMeetings);
+    const titles = await getTitles(upcomingMeetings);
+    const dates = await getDates(upcomingMeetings);
+    const times = await getTimes(upcomingMeetings);
+
+    console.log(usernames);
+    res.json({
+      meeting_ids,
+      usernames,
+      titles,
+      dates,
+      times
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error finding meetings with filtered time slots' });
@@ -172,5 +374,7 @@ module.exports = {
     getMeetingById,
     updateMeeting,
     deleteMeeting,
-    getPendingMeetings
+    getPendingMeetings,
+    getHostedMeetings,
+    getUpcomingMeetings,
 }

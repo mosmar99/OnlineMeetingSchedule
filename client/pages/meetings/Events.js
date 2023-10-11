@@ -1,9 +1,15 @@
 import "./Events.css";
-import { useState } from "react";
+import { useState,  } from "react";
 import useFetch from "../../utils/useFetch";
 import MeetingsHeader from "../../components/MeetingsHeader";
 import MeetingInfoModal from "../../components/MeetingInfo";
+import MeetingVoteModal from "../../components/MeetingVote";
+import { Fragment } from "react";
 import axios from "axios";
+import {Menu, MenuItem} from "@mui/material";
+import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import EditMeetingModal from "../../components/EditMeeting";
 
 
 const ChipButton = ({title, active, number, onClick}) => {
@@ -15,52 +21,58 @@ const ChipButton = ({title, active, number, onClick}) => {
     );
 }
 
-function Events() {
+function Events({ user }) {
     const [view, setView] = useState("upcoming");
     const [infoModal, setInfoModal] = useState(null);
-    const {data, isPending} = useFetch("/api/meetings/detailed");
+    const [editModal, setEditModal] = useState(null);
+    const [voteModal, setVoteModal] = useState(null);
+    const {data: pending, isPending: loadingPending} = useFetch("/api/meetings/pending", { userId: user._id });
+    const {data: hosted, isPending: loadingHosted} = useFetch("/api/meetings/hosted", { userId: user._id });
 
-    if (isPending) {
-        return (
-            <div>
-                <MeetingsHeader activePage="events"/>
-            </div>
-        )
+    if (loadingPending || loadingHosted)
+        return <div><MeetingsHeader activePage="events"/></div>
+
+    // Transpose received data into a common object form.
+    const transposeEvents = events => {
+        const transposedEvents = []
+
+        Object.keys(events).map(key => {
+            for (let i = 0; i < events[key].length; i++) {
+                if (transposedEvents[i] === undefined) transposedEvents[i] = {};
+                transposedEvents[i][key] = events[key][i];
+            }
+        })
+
+        return transposedEvents;
     }
 
-    const meetings = data;
-
-    useEffect(() => {
-        // Fetch all votes for the participant
-        const participantId = "65187dc4516fb886c50363b0";
-        axios.get(`http://localhost:3000/api/invites/user/${participantId}`)
-          .then((response) => {
-            setVotes(response.data);
-          })
-          .catch((error) => {
-            console.error("Error fetching votes:", error);
-          });
-      }, []);
-
+    console.log(hosted)
+    
     const views = [
         {
             name: "upcoming",
             title: "Upcoming",
-            events: meetings.filter(meeting => meeting.startDate !== undefined),
+            events: []
         },
         {
             name: "pending",
             title: "Pending",
-            events: meetings.filter(meeting => meeting.startDate === undefined),
+            events: pending ? transposeEvents(pending) : [],
         },
         {
-            name: "past",
-            title: "Past",
-            events: [],
+            name: "hosted",
+            title: "Hosted",
+            events: hosted ? transposeEvents(hosted) : [],
         }
     ]
+    
+    // Set up current view.
+    const activeView = views.find(v => v.name === view);
 
+    // Set up current view
     const events = views.find(v => v.name === view).events;
+    console.log(activeView.events)
+
 
     return (
         <div>
@@ -90,19 +102,72 @@ function Events() {
                     <div id="events-list">
                         <div id="events-list-header">
                             <span>Title</span>
-                            <span>Date</span>
-                            <span>Time</span>
+                            {activeView.name === "pending" ? (
+                                <span style={{gridColumnStart: 2, gridColumnEnd: 4}}>Available timeslots</span>
+                            ) : (
+                                <Fragment>
+                                    <span>Date</span>
+                                    <span>Time</span>
+                                </Fragment>
+                            )} 
                             <span>Host</span>
                         </div>
-                        {events.map(event => (
-                            <div className="events-list-item"> 
-                                <span onClick={() => setInfoModal(event)}>{event.title}</span>
-                                <span>N/A</span>
-                                <span>N/A</span>
-                                <span>{event.organizer?.username || "N/A"}</span>
+                        {activeView.events.filter(event => event.dates).map(event => (
+                            <div className="events-list-item" key={event._id}> 
+                                <div className="events-list-item-dots">
+                                    <PopupState variant="popover" popupId="demo-popup-menu">
+                                        {(popupState) => (
+                                            <Fragment>
+                                                <MoreHorizIcon {...bindTrigger(popupState)}></MoreHorizIcon>
+                                                <Menu {...bindMenu(popupState)}>
+                                                    <MenuItem onClick={() => {popupState.close();
+                                                        console.log(event);
+                                                        setInfoModal(event);
+                                                    }} name="info">Info</MenuItem>
+                                                    {activeView.name === "hosted" &&
+                                                        <MenuItem onClick={() => {popupState.close();
+                                                            setEditModal(event);
+                                                        }} name="edit">Edit</MenuItem>
+                                                    }
+                                                    {activeView.name === "hosted" &&
+                                                        <MenuItem onClick={() => {popupState.close();
+                                                            axios.delete("/api/meetings/"+event.meeting_ids);
+                                                        }} name="delete">Delete</MenuItem>
+                                                    }
+                                                </Menu>
+                                            </Fragment>
+                                        )}
+                                    </PopupState> 
+                                </div>                                       
+                                <span onClick={() => {
+                                    if (activeView.name === "pending") setVoteModal(event)
+                                    else setInfoModal(event)
+                                }}
+                                >{event.titles}</span>
+                                {activeView.name === "pending" ? (
+                                    <span style={{gridColumnStart: 2, gridColumnEnd: 4}}>
+                                        <ul>
+                                            {(() => {
+                                                let timeSlots = [];
+                                                for (let i = 0; i < event.dates.length; i++) {
+                                                    timeSlots.push(`${event.times[i]}, ${event.dates[i]}`)
+                                                }
+                                                return timeSlots.map(timeSlot => {
+                                                    return <li className="events-list-timeslot">{timeSlot}</li>
+                                                })
+                                            })()}
+                                        </ul>
+                                    </span>
+                                ) : (
+                                    <Fragment>
+                                        <span>{event?.dates[0]}</span>
+                                        <span>{event?.times[0]}</span>
+                                    </Fragment>
+                                )} 
+                                <span>{event.usernames}</span>
                             </div>
                         ))}
-                        {!events.length && (
+                        {!activeView.events.length && (
                             <div id="events-none-found">
                                 No {view} events.
                             </div>
@@ -114,13 +179,14 @@ function Events() {
             {infoModal && (
                 <MeetingInfoModal {...infoModal} onExit={() => setInfoModal(null)}/>
             )}
+            {editModal &&(
+                <EditMeetingModal {...editModal} onExit={() => setEditModal(null)}></EditMeetingModal>
+            )}
+            {voteModal && (
+                <MeetingVoteModal {...voteModal} onExit={() => setVoteModal(null)}/>
+            )}
         </div>
     )
-
-    // Function to handle voting for a timeslot
-    const handleVote = (vote) => {
-
-    };
 }
 
 export default Events;

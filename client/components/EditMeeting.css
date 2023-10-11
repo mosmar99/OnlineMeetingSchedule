@@ -1,0 +1,31 @@
+#autoc{
+    width: 60%;
+    align-items: center;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5;
+    margin-bottom: 5;
+}
+
+#meeting-info-modal{
+    text-align: center;
+    align-items: center;
+}
+
+#meeting-info-modal > div > form > label{
+    display: block;
+    float:left
+}
+
+
+#save-btn {
+    padding: 10px 30px;
+    background-color: #FFEF5A;
+    border: 1px solid #E4A62C;
+    border-radius: 28px;
+    font-size: 14px;
+    font-family: var(--helvetica);
+    cursor: pointer;
+    margin:auto;
+}
