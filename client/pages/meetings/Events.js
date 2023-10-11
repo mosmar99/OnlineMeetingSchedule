@@ -1,5 +1,5 @@
 import "./Events.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useFetch from "../../utils/useFetch";
 import MeetingsHeader from "../../components/MeetingsHeader";
 import MeetingInfoModal from "../../components/MeetingInfo";
@@ -18,17 +18,8 @@ const ChipButton = ({title, active, number, onClick}) => {
 function Events() {
     const [view, setView] = useState("upcoming");
     const [infoModal, setInfoModal] = useState(null);
+    const [votes, setVotes] = useState([]);
     const {data, isPending} = useFetch("/api/meetings/detailed");
-
-    if (isPending) {
-        return (
-            <div>
-                <MeetingsHeader activePage="events"/>
-            </div>
-        )
-    }
-
-    const meetings = data;
 
     useEffect(() => {
         // Fetch all votes for the participant
@@ -41,6 +32,17 @@ function Events() {
             console.error("Error fetching votes:", error);
           });
       }, []);
+
+if (isPending) {
+        return (
+            <div>
+                <MeetingsHeader activePage="events"/>
+            </div>
+        )
+    }
+
+    const meetings = data;
+
 
     const views = [
         {
@@ -95,7 +97,7 @@ function Events() {
                             <span>Host</span>
                         </div>
                         {events.map(event => (
-                            <div className="events-list-item"> 
+                            <div className="events-list-item" key={event.title}> 
                                 <span onClick={() => setInfoModal(event)}>{event.title}</span>
                                 <span>N/A</span>
                                 <span>N/A</span>

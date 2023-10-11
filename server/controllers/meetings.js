@@ -1,4 +1,5 @@
 const Meeting = require('../models/meetings');
+const User = require("../models/users");
 const { invitesByParticipantId } = require('./invites.js'); 
 const mongoose = require('mongoose');
 
