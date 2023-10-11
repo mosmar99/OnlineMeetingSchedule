@@ -149,7 +149,7 @@ async function findMeetingsBasedOnTimeSlots(timeSlots) {
   }
 }
 
-async function getOrgNames(meetings) {
+async function getNames(meetings) {
   try {
       const organizerNames = await Promise.all(meetings.map(async (meeting) => {
       const userId = await User.findById(meeting.organizer);
@@ -163,7 +163,7 @@ async function getOrgNames(meetings) {
   }
 }
 
-async function getOrgTitles(meetings) {
+async function getTitles(meetings) {
   try {
     const organizerTitles = meetings.map(meeting => meeting.title).filter(title => title !== null);
     return organizerTitles;
@@ -173,7 +173,7 @@ async function getOrgTitles(meetings) {
   }
 }
 
-async function getOrgDescriptions(meetings) {
+async function getDescriptions(meetings) {
   try {
     const organizerDesc = meetings.map(meeting => meeting.description);
     return organizerDesc;
@@ -183,7 +183,7 @@ async function getOrgDescriptions(meetings) {
   }
 }
 
-async function getOrgParticipants(meetings) {
+async function getParticipants(meetings) {
   try {
     let organizerParticipants = meetings.map(meeting => meeting.participants);
 
@@ -204,7 +204,7 @@ async function getOrgParticipants(meetings) {
   }
 }
 
-async function getOrgDates(meetings) {
+async function getDates(meetings) {
   try {
     const timeRanges = [];
 
@@ -236,7 +236,7 @@ async function getOrgDates(meetings) {
   }
 }
 
-async function getOrgTimes(meetings) {
+async function getTimes(meetings) {
   try {
     const timeRanges = [];
 
@@ -280,12 +280,12 @@ async function getPendingMeetings(req, res) {
     const matchingMeetings = await findMeetingsBasedOnTimeSlots(maybeTimeSlots);
 
     const meeting_ids = matchingMeetings.map(meeting => meeting._id.toString());
-    const usernames = await getOrgNames(matchingMeetings);
-    const descriptions = await getOrgDescriptions(matchingMeetings);
-    const titles = await getOrgTitles(matchingMeetings);
-    const dates = await getOrgDates(matchingMeetings);
-    const times = await getOrgTimes(matchingMeetings);
-    const participants = await getOrgParticipants(matchingMeetings);
+    const usernames = await getNames(matchingMeetings);
+    const descriptions = await getDescriptions(matchingMeetings);
+    const titles = await getTitles(matchingMeetings);
+    const dates = await getDates(matchingMeetings);
+    const times = await getTimes(matchingMeetings);
+    const participants = await getParticipants(matchingMeetings);
 
     res.json({
       meeting_ids,
@@ -309,12 +309,12 @@ async function getHostedMeetings(req, res) {
     const meetings = await Meeting.find({ organizer: new ObjectId(userId) });
     
     const meeting_ids = meetings.map(meeting => meeting._id.toString());
-    const usernames = await getOrgNames(meetings);
-    const descriptions = await getOrgDescriptions(meetings);
-    const titles = await getOrgTitles(meetings);
-    const dates = await getOrgDates(meetings);
-    const times = await getOrgTimes(meetings);
-    const participants = await getOrgParticipants(meetings);
+    const usernames = await getNames(meetings);
+    const descriptions = await getDescriptions(meetings);
+    const titles = await getTitles(meetings);
+    const dates = await getDates(meetings);
+    const times = await getTimes(meetings);
+    const participants = await getParticipants(meetings);
 
     res.json({
       meeting_ids,
@@ -332,6 +332,53 @@ async function getHostedMeetings(req, res) {
   }
 }
 
+async function getUpcomingMeetings(req, res) {
+  try {
+
+    // OBS IN PROGRESS
+    const userId = req.query.userId;
+
+    const upcomingMeetings = await Meeting.find({
+      $and: [
+        {
+          invites: {
+            $all: [
+              { $elemMatch: { vote: 'yes' } }
+            ]
+          }
+        },
+        {
+          $or: [
+            { organizer: userId },
+            { participants: userId }
+          ]
+        }
+      ]
+    });
+    
+    console.log(upcomingMeetings);
+
+    const meeting_ids = upcomingMeetings.map(meeting => meeting._id.toString());
+    const usernames = await getNames(upcomingMeetings);
+    const titles = await getTitles(upcomingMeetings);
+    const dates = await getDates(upcomingMeetings);
+    const times = await getTimes(upcomingMeetings);
+
+    //console.log(usernames);
+    // res.json({
+    //   meeting_ids,
+    //   usernames,
+    //   titles,
+    //   dates,
+    //   times
+    // });
+    res.json(meetings);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error finding meetings with filtered time slots' });
+  }
+}
+
 module.exports = {
     createMeeting,
     getMeetings,
@@ -341,4 +388,5 @@ module.exports = {
     deleteMeeting,
     getPendingMeetings,
     getHostedMeetings,
+    getUpcomingMeetings,
 }
