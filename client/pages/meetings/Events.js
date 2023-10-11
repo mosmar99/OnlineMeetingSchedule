@@ -1,9 +1,13 @@
 import "./Events.css";
-import { useState, useEffect } from "react";
+import { useState, Fragment, useEffect} from "react";
 import useFetch from "../../utils/useFetch";
 import MeetingsHeader from "../../components/MeetingsHeader";
 import MeetingInfoModal from "../../components/MeetingInfo";
 import axios from "axios";
+import {Menu, MenuItem} from "@mui/material";
+import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import EditMeetingModal from "../../components/EditMeeting";
 
 
 const ChipButton = ({title, active, number, onClick}) => {
@@ -18,6 +22,7 @@ const ChipButton = ({title, active, number, onClick}) => {
 function Events() {
     const [view, setView] = useState("upcoming");
     const [infoModal, setInfoModal] = useState(null);
+    const [editModal, setEditModal] = useState(null);
     const {data, isPending} = useFetch("/api/meetings/detailed");
     const [votes, setVotes] = useState([]);
     
@@ -31,17 +36,21 @@ function Events() {
 
     const meetings = data;
 
-    useEffect(() => {
-        // Fetch all votes for the participant
-        const participantId = "65187dc4516fb886c50363b0";
-        axios.get(`http://localhost:3000/api/invites/user/${participantId}`)
-          .then((response) => {
-            setVotes(response.data);
-          })
-          .catch((error) => {
-            console.error("Error fetching votes:", error);
-          });
-      }, []);
+    let cookie = document.cookie;
+    let organizer = cookie.slice(cookie.indexOf("_id"),cookie.indexOf("username"));
+    organizer = organizer.slice(organizer.indexOf("%3A%22")+6, organizer.indexOf("%22%2C"));
+
+    // useEffect(() => {
+    //     // Fetch all votes for the participant
+    //     const participantId = "65187dc4516fb886c50363b0";
+    //     axios.get(`http://localhost:3000/api/invites/user/${participantId}`)
+    //       .then((response) => {
+    //         setVotes(response.data);
+    //       })
+    //       .catch((error) => {
+    //         console.error("Error fetching votes:", error);
+    //       });
+    //   }, []);
 
     const views = [
         {
@@ -101,6 +110,23 @@ function Events() {
                                 <span>N/A</span>
                                 <span>N/A</span>
                                 <span>{event.organizer?.username || "N/A"}</span>
+                                <PopupState variant="popover" popupId="demo-popup-menu">
+                                    {(popupState) => (
+                                        <Fragment>
+                                            <MoreHorizIcon {...bindTrigger(popupState)}></MoreHorizIcon>
+                                            <Menu {...bindMenu(popupState)}>
+                                                <MenuItem onClick={() => {popupState.close();
+                                                    setEditModal(event);
+                                                }} name="info">Info</MenuItem>
+                                                {organizer == event.host && view.name != "upcoming" &&
+                                                    <MenuItem onClick={() => {popupState.close();
+                                                        
+                                                    }} name="edit">Edit</MenuItem>
+                                                }
+                                            </Menu>
+                                        </Fragment>
+                                    )}
+                                </PopupState>                                
                             </div>
                         ))}
                         {!events.length && (
@@ -114,6 +140,9 @@ function Events() {
             </div>
             {infoModal && (
                 <MeetingInfoModal {...infoModal} onExit={() => setInfoModal(null)}/>
+            )}
+            {editModal &&(
+                <EditMeetingModal {...editModal} onExit={() => setEditModal(null)}></EditMeetingModal>
             )}
         </div>
     )
