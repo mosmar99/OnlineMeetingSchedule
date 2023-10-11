@@ -48,10 +48,9 @@ function Events({ user }) {
     ]
 
     //console.log("pending", pending)
-
+    console.log
     // Set up current view
     const events = views.find(v => v.name === view).events;
-
     return (
         <div>
             <MeetingsHeader activePage="events"/>
@@ -104,6 +103,9 @@ function Events({ user }) {
                                                             setEditModal(event);
                                                         }} name="edit">Edit</MenuItem>
                                                     }
+                                                    <MenuItem onClick={() => {popupState.close();
+                                                        axios.delete("/api/meetings/"+ event._id);
+                                                    }} name="delete">Delete</MenuItem>
                                                 </Menu>
                                             </Fragment>
                                         )}
