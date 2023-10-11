@@ -1,5 +1,6 @@
 const Meeting = require('../models/meetings');
 const { invitesByParticipantId } = require('./invites.js'); 
+const User = require("../models/users");
 const mongoose = require('mongoose');
 
 // Create a new meeting
