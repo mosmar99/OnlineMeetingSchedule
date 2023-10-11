@@ -53,12 +53,28 @@ async function getInviteById(req, res) {
   }
 }
 
+// Controller function to get all invites for a participant by their ID
+async function invitesByParticipantId(req, res) {
+  try {
+    // Convert the string to an ObjectId
+    const participantId = new ObjectId(req.params.participant);
+
+    // Use Mongoose to find all invites where the participant matches the given ID
+    const invites = await Invite.find({ participant: participantId });
+
+    res.json(invites);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching invites for the participant' });
+  }
+}
+
 // Controller function to update an invite by ID
 async function updateInvite(req, res) {
   try {
     const { id } = req.params;
-    const { userId, voted, notified } = req.body;
-    const updatedInvite = await Invite.findByIdAndUpdate(id, { userId, voted, notified }, { new: true });
+    const { userId, vote } = req.body; 
+    const updatedInvite = await Invite.findByIdAndUpdate(id, { userId, vote }, { new: true });
     if (!updatedInvite) {
       return res.status(404).json({ message: 'Invite not found' });
     }
@@ -68,6 +84,7 @@ async function updateInvite(req, res) {
     res.status(500).json({ message: 'Error updating invite' });
   }
 }
+
 
 // Controller function to delete an invite by ID
 async function deleteInvite(req, res) {
@@ -84,10 +101,30 @@ async function deleteInvite(req, res) {
   }
 }
 
+// Controller function to delete all invites in the database
+async function deleteAllInvites(req, res) {
+  try {
+    // Use Mongoose's deleteMany to remove all invites
+    const result = await Invite.deleteMany({});
+
+    // Check the result to determine if any invites were deleted
+    if (result.deletedCount === 0) {
+      return res.json({ message: 'No invites found to delete' });
+    }
+
+    res.json({ message: `${result.deletedCount} invites deleted successfully` });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error deleting invites' });
+  }
+}
+
 module.exports = {
   createInvite,
   getAllInvites,
   getInviteById,
   updateInvite,
   deleteInvite,
+  invitesByParticipantId,
+  deleteAllInvites,
 };

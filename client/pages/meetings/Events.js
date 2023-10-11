@@ -3,6 +3,8 @@ import { useState } from "react";
 import useFetch from "../../utils/useFetch";
 import MeetingsHeader from "../../components/MeetingsHeader";
 import MeetingInfoModal from "../../components/MeetingInfo";
+import axios from "axios";
+
 
 const ChipButton = ({title, active, number, onClick}) => {
     return (
@@ -27,6 +29,18 @@ function Events() {
     }
 
     const meetings = data;
+
+    useEffect(() => {
+        // Fetch all votes for the participant
+        const participantId = "65187dc4516fb886c50363b0";
+        axios.get(`http://localhost:3000/api/invites/user/${participantId}`)
+          .then((response) => {
+            setVotes(response.data);
+          })
+          .catch((error) => {
+            console.error("Error fetching votes:", error);
+          });
+      }, []);
 
     const views = [
         {
@@ -102,6 +116,11 @@ function Events() {
             )}
         </div>
     )
+
+    // Function to handle voting for a timeslot
+    const handleVote = (vote) => {
+
+    };
 }
 
 export default Events;
