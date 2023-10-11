@@ -3,6 +3,7 @@ import { useState } from "react";
 import useFetch from "../../utils/useFetch";
 import MeetingsHeader from "../../components/MeetingsHeader";
 import MeetingInfoModal from "../../components/MeetingInfo";
+import MeetingVoteModal from "../../components/MeetingVote";
 import { Fragment } from "react";
 
 
@@ -18,6 +19,7 @@ const ChipButton = ({title, active, number, onClick}) => {
 function Events({ user }) {
     const [view, setView] = useState("upcoming");
     const [infoModal, setInfoModal] = useState(null);
+    const [voteModal, setVoteModal] = useState(null);
     const {data: pending, isPending: loadingPending} = useFetch("/api/meetings/pending", { userId: user._id });
     const {data: hosted, isPending: loadingHosted} = useFetch("/api/meetings/hosted", { userId: user._id });
 
@@ -31,13 +33,14 @@ function Events({ user }) {
         Object.keys(events).map(key => {
             for (let i = 0; i < events[key].length; i++) {
                 if (transposedEvents[i] === undefined) transposedEvents[i] = {};
-
                 transposedEvents[i][key] = events[key][i];
             }
         })
 
         return transposedEvents;
     }
+
+    console.log(hosted)
     
     const views = [
         {
@@ -53,12 +56,14 @@ function Events({ user }) {
         {
             name: "hosted",
             title: "Hosted",
-            events: hosted,
+            events: hosted ? transposeEvents(hosted) : [],
         }
     ]
     
     // Set up current view.
     const activeView = views.find(v => v.name === view);
+
+    console.log(activeView.events)
 
     return (
         <div>
@@ -98,9 +103,13 @@ function Events({ user }) {
                             )} 
                             <span>Host</span>
                         </div>
-                        {activeView.events.map(event => (
+                        {activeView.events.filter(event => event.dates).map(event => (
                             <div className="events-list-item" key={event._id}> 
-                                <span onClick={() => setInfoModal(event)}>{event.titles}</span>
+                                <span onClick={() => {
+                                    if (activeView.name === "pending") setVoteModal(event)
+                                    else setInfoModal(event)
+                                }}
+                                >{event.titles}</span>
                                 {activeView.name === "pending" ? (
                                     <span style={{gridColumnStart: 2, gridColumnEnd: 4}}>
                                         <ul>
@@ -117,8 +126,8 @@ function Events({ user }) {
                                     </span>
                                 ) : (
                                     <Fragment>
-                                        <span>{event.dates[0]}</span>
-                                        <span>{event.times[0]}</span>
+                                        <span>{event?.dates[0]}</span>
+                                        <span>{event?.times[0]}</span>
                                     </Fragment>
                                 )} 
                                 <span>{event.usernames}</span>
@@ -134,7 +143,10 @@ function Events({ user }) {
                 </div>
             </div>
             {infoModal && (
-                <MeetingInfoModal {...infoModal} showTimeslots={activeView.name === "pending"} onExit={() => setInfoModal(null)}/>
+                <MeetingInfoModal {...infoModal} onExit={() => setInfoModal(null)}/>
+            )}
+            {voteModal && (
+                <MeetingVoteModal {...voteModal} onExit={() => setVoteModal(null)}/>
             )}
         </div>
     )

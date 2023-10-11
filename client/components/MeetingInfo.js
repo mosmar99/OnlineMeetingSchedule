@@ -22,7 +22,7 @@ function MeetingInfoModal({titles, descriptions, dates, times, usernames, partic
                 <div id="meeting-info-modal-right">
                     <div id="meeting-info-modal-right-up">
                         <h4>Date and time</h4>
-                        <p>{dates[0]}, {times[0]}</p>
+                        <p>{times[0]}<br/>{dates[0]}</p>
                     </div>
                     <div id="meeting-info-modal-right-down">
                         <h4>Participants</h4>
