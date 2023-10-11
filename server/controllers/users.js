@@ -9,7 +9,7 @@ async function signup(req, res) {
         console.error(error);
         res.status(500).json({ message: "Error creating user" });
     }
-  }
+}
   
 async function login(req, res) {
     const { email, password } = req.body;
