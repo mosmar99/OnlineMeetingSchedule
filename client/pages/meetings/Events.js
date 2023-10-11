@@ -51,6 +51,9 @@ function Events({ user }) {
     console.log
     // Set up current view
     const events = views.find(v => v.name === view).events;
+
+    let vname;
+
     return (
         <div>
             <MeetingsHeader activePage="events"/>
@@ -97,15 +100,19 @@ function Events({ user }) {
                                                 <Menu {...bindMenu(popupState)}>
                                                     <MenuItem onClick={() => {popupState.close();
                                                         setInfoModal(event);
+                                                        console.log(event.organizer);
+                                                        console.log(user._id);
                                                     }} name="info">Info</MenuItem>
-                                                    {event.organizer?.username == event.organizer?.username && view.name != "upcoming" &&
+                                                    {event.organizer == user._id && view == "hosted" &&
                                                         <MenuItem onClick={() => {popupState.close();
                                                             setEditModal(event);
                                                         }} name="edit">Edit</MenuItem>
                                                     }
-                                                    <MenuItem onClick={() => {popupState.close();
-                                                        axios.delete("/api/meetings/"+ event._id);
-                                                    }} name="delete">Delete</MenuItem>
+                                                    {event.organizer == user._id && view == "hosted" &&
+                                                        <MenuItem onClick={() => {popupState.close();
+                                                            axios.delete("/api/meetings/"+ event._id);
+                                                        }} name="delete">Delete</MenuItem>
+                                                    }
                                                 </Menu>
                                             </Fragment>
                                         )}
