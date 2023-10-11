@@ -68,6 +68,7 @@
 }
 
 .events-list-item {
+    position: relative;
     padding: 54px 41px;
     border: 1px solid #BFBFBF;
     border-top: none;
@@ -95,6 +96,21 @@
     color: #5A6AFF;
 }
 
+.events-list-item-dots {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    cursor: pointer;
+    padding: 20px;
+}
+
+.events-list-item-dots > svg {
+    transform: scale(1.5);
+}
+
+.events-list-item-dots:hover > svg > path {
+    fill: #5A6AFF;
+}
 .events-list-timeslot:not(:last-child) {
     margin-bottom: 10px;
 }

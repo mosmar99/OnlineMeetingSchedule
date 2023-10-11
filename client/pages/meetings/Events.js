@@ -1,10 +1,15 @@
 import "./Events.css";
-import { useState } from "react";
+import { useState,  } from "react";
 import useFetch from "../../utils/useFetch";
 import MeetingsHeader from "../../components/MeetingsHeader";
 import MeetingInfoModal from "../../components/MeetingInfo";
 import MeetingVoteModal from "../../components/MeetingVote";
 import { Fragment } from "react";
+import axios from "axios";
+import {Menu, MenuItem} from "@mui/material";
+import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import EditMeetingModal from "../../components/EditMeeting";
 
 
 const ChipButton = ({title, active, number, onClick}) => {
@@ -19,6 +24,7 @@ const ChipButton = ({title, active, number, onClick}) => {
 function Events({ user }) {
     const [view, setView] = useState("upcoming");
     const [infoModal, setInfoModal] = useState(null);
+    const [editModal, setEditModal] = useState(null);
     const [voteModal, setVoteModal] = useState(null);
     const {data: pending, isPending: loadingPending} = useFetch("/api/meetings/pending", { userId: user._id });
     const {data: hosted, isPending: loadingHosted} = useFetch("/api/meetings/hosted", { userId: user._id });
@@ -63,7 +69,11 @@ function Events({ user }) {
     // Set up current view.
     const activeView = views.find(v => v.name === view);
 
+    // Set up current view
+    const events = views.find(v => v.name === view).events;
     console.log(activeView.events)
+
+    let vname;
 
     return (
         <div>
@@ -105,6 +115,32 @@ function Events({ user }) {
                         </div>
                         {activeView.events.filter(event => event.dates).map(event => (
                             <div className="events-list-item" key={event._id}> 
+                                <div className="events-list-item-dots">
+                                    <PopupState variant="popover" popupId="demo-popup-menu">
+                                        {(popupState) => (
+                                            <Fragment>
+                                                <MoreHorizIcon {...bindTrigger(popupState)}></MoreHorizIcon>
+                                                <Menu {...bindMenu(popupState)}>
+                                                    <MenuItem onClick={() => {popupState.close();
+                                                        setInfoModal(event);
+                                                        console.log(event.organizer);
+                                                        console.log(user._id);
+                                                    }} name="info">Info</MenuItem>
+                                                    {event.organizer == user._id && view == "hosted" &&
+                                                        <MenuItem onClick={() => {popupState.close();
+                                                            setEditModal(event);
+                                                        }} name="edit">Edit</MenuItem>
+                                                    }
+                                                    {event.organizer == user._id && view == "hosted" &&
+                                                        <MenuItem onClick={() => {popupState.close();
+                                                            axios.delete("/api/meetings/"+ event._id);
+                                                        }} name="delete">Delete</MenuItem>
+                                                    }
+                                                </Menu>
+                                            </Fragment>
+                                        )}
+                                    </PopupState> 
+                                </div>                                       
                                 <span onClick={() => {
                                     if (activeView.name === "pending") setVoteModal(event)
                                     else setInfoModal(event)
@@ -145,6 +181,8 @@ function Events({ user }) {
             {infoModal && (
                 <MeetingInfoModal {...infoModal} onExit={() => setInfoModal(null)}/>
             )}
+            {editModal &&(
+                <EditMeetingModal {...editModal} onExit={() => setEditModal(null)}></EditMeetingModal>
             {voteModal && (
                 <MeetingVoteModal {...voteModal} onExit={() => setVoteModal(null)}/>
             )}
