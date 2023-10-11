@@ -7,5 +7,6 @@ router.get('/:id', controller.getMeetingById);
 router.post('/', controller.createMeeting);
 router.delete('/:id', controller.deleteMeeting);
 router.patch('/:id', controller.updateMeeting);
+router.get('/pending', controller.getPendingMeetings);
 
 module.exports = router;

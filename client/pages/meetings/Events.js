@@ -1,6 +1,7 @@
 import "./Events.css";
 import { useState } from "react";
 import MeetingsHeader from "../../components/MeetingsHeader";
+import axios from "axios";
 
 const FilterButton = () => {
 
@@ -17,6 +18,7 @@ const ChipButton = ({title, active, number, onClick}) => {
 
 function Events() {
     const [view, setView] = useState("upcoming");
+    const [votes, setVotes] = useState([]);
 
     const meetings = [
         {
@@ -27,6 +29,18 @@ function Events() {
             time: "15:00-17:00",
         }
     ]
+
+    useEffect(() => {
+        // Fetch all votes for the participant
+        const participantId = "65187dc4516fb886c50363b0";
+        axios.get(`http://localhost:3000/api/invites/user/${participantId}`)
+          .then((response) => {
+            setVotes(response.data);
+          })
+          .catch((error) => {
+            console.error("Error fetching votes:", error);
+          });
+      }, []);
 
     const views = [
         {
@@ -99,6 +113,11 @@ function Events() {
             </div>
         </div>
     )
+
+    // Function to handle voting for a timeslot
+    const handleVote = (vote) => {
+
+    };
 }
 
 export default Events;
