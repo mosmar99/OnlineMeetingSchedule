@@ -115,7 +115,7 @@ function NewMeetingModal({ onClose }) {
                             {users != null &&
                                 <Autocomplete
                                     onChange={(_, value) => setParticipantList(value)}
-                                    sx={{marginTop: 1}}
+                                    sx={{marginTop: 1, width:20}}
                                     fullWidth={true}
                                     multiple
                                     options={users}

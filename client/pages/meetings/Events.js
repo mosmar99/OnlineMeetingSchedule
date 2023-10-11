@@ -47,7 +47,7 @@ function Events({ user }) {
         }
     ]
 
-    console.log("pending", pending)
+    //console.log("pending", pending)
 
     // Set up current view
     const events = views.find(v => v.name === view).events;
@@ -96,21 +96,19 @@ function Events({ user }) {
                                             <Fragment>
                                                 <MoreHorizIcon {...bindTrigger(popupState)}></MoreHorizIcon>
                                                 <Menu {...bindMenu(popupState)}>
-                                                    <MenuItem onClick={() => {
-                                                        popupState.close();
-                                                        setEditModal(event);
+                                                    <MenuItem onClick={() => {popupState.close();
+                                                        setInfoModal(event);
                                                     }} name="info">Info</MenuItem>
-                                                    {event.organizer == event.host && view.name != "upcoming" &&
-                                                        <MenuItem 
-                                                            onClick={() => popupState.close()} 
-                                                            name="edit"
-                                                        >Edit</MenuItem>
+                                                    {event.organizer?.username == event.organizer?.username && view.name != "upcoming" &&
+                                                        <MenuItem onClick={() => {popupState.close();
+                                                            setEditModal(event);
+                                                        }} name="edit">Edit</MenuItem>
                                                     }
                                                 </Menu>
                                             </Fragment>
                                         )}
-                                    </PopupState>   
-                                </div>                             
+                                    </PopupState> 
+                                </div>                               
                             </div>
                         ))}
                         {!events.length && (
