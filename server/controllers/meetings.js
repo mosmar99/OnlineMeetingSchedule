@@ -362,7 +362,6 @@ async function getUpcomingMeetings(req, res) {
     const dates = await getDates(upcomingMeetings);
     const times = await getTimes(upcomingMeetings);
 
-    console.log(usernames);
     res.json({
       meeting_ids,
       usernames,
