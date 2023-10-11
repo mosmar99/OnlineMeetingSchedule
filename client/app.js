@@ -11,6 +11,7 @@ import Logout from "./pages/Logout";
 import SignUp from "./pages/SignUp";
 import Events from "./pages/meetings/Events";
 import Calendar from "./pages/meetings/Calendar";
+import ProfilePage from "./pages/ProfilePage";
 
 // components
 import Header from "./components/Header";
@@ -32,6 +33,7 @@ export const App = () => {
                         {/* Information */}
                         <Route path='/' element={<Home />} />
                         <Route path='/features' element={<Features />} />
+                        <Route path='/profile' element={<ProfilePage user={cookies.user} />} />
                         <Route path='/support' element={<Support />} />
                         <Route path='/about' element={<About />} />
                         
@@ -42,7 +44,8 @@ export const App = () => {
                         {/* Authentication */}
                         <Route path='/login' element={cookies.user ? <Navigate to="/calendar"/> : <Login setUser={setUser}/>}/>
                         <Route path='/signUp' element={cookies.user ? <Navigate to="/calendar"/> : <SignUp setUser={setUser}/>}/>
-                        <Route path='/logout' element={cookies.user ? <Logout removeUser={removeUser}/> : <Login/>}/>                   
+                        <Route path='/logout' element={cookies.user ? <Logout removeUser={removeUser}/> : <Login/>}/>
+                        
                         
                         {/* Others */}
                         <Route path="*" element={<NotFound />}/>

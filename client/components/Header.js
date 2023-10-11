@@ -57,6 +57,12 @@ const Header = ({ user }) => {
 							)}
 
 							{user && (
+								<Typography variant="h6" noWrap component="a" id="header-login-logout" href="/profile">
+								{user.username}
+								</Typography>
+							)}
+
+							{user && (
 								<Typography variant="h6" noWrap component="a" id="header-login-logout" href="/logout">
 								Logout
 								</Typography>
