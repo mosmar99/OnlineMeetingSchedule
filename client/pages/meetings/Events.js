@@ -1,11 +1,10 @@
 import "./Events.css";
 import { useState } from "react";
+import useFetch from "../../utils/useFetch";
 import MeetingsHeader from "../../components/MeetingsHeader";
+import MeetingInfoModal from "../../components/MeetingInfo";
 import axios from "axios";
 
-const FilterButton = () => {
-
-}
 
 const ChipButton = ({title, active, number, onClick}) => {
     return (
@@ -18,17 +17,18 @@ const ChipButton = ({title, active, number, onClick}) => {
 
 function Events() {
     const [view, setView] = useState("upcoming");
-    const [votes, setVotes] = useState([]);
+    const [infoModal, setInfoModal] = useState(null);
+    const {data, isPending} = useFetch("/api/meetings/detailed");
 
-    const meetings = [
-        {
-            host: "Emil Wagman",
-            title: "Teammöte",
-            description: "Fyll med information",
-            date: "27 June",
-            time: "15:00-17:00",
-        }
-    ]
+    if (isPending) {
+        return (
+            <div>
+                <MeetingsHeader activePage="events"/>
+            </div>
+        )
+    }
+
+    const meetings = data;
 
     useEffect(() => {
         // Fetch all votes for the participant
@@ -46,12 +46,12 @@ function Events() {
         {
             name: "upcoming",
             title: "Upcoming",
-            events: meetings,
+            events: meetings.filter(meeting => meeting.startDate !== undefined),
         },
         {
             name: "pending",
             title: "Pending",
-            events: [],
+            events: meetings.filter(meeting => meeting.startDate === undefined),
         },
         {
             name: "past",
@@ -65,7 +65,7 @@ function Events() {
     return (
         <div>
             <MeetingsHeader activePage="events"/>
-            <div style={{ display: "flex", justifyContent: "center" }}>
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: "50px" }}>
                 <div style={{ width: "1000px" }}>
                     <div id="events-controls">
                         <div id="events-presets">
@@ -96,10 +96,10 @@ function Events() {
                         </div>
                         {events.map(event => (
                             <div className="events-list-item"> 
-                                <span>{event.title}</span>
-                                <span>{event.date}</span>
-                                <span>{event.time}</span>
-                                <span>{event.host}</span>
+                                <span onClick={() => setInfoModal(event)}>{event.title}</span>
+                                <span>N/A</span>
+                                <span>N/A</span>
+                                <span>{event.organizer?.username || "N/A"}</span>
                             </div>
                         ))}
                         {!events.length && (
@@ -111,6 +111,9 @@ function Events() {
                     <span id="events-end-notice">You’ve reached the end of the list.</span>
                 </div>
             </div>
+            {infoModal && (
+                <MeetingInfoModal {...infoModal} onExit={() => setInfoModal(null)}/>
+            )}
         </div>
     )
 

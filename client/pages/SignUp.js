@@ -38,7 +38,7 @@ const SignUp = ({ setUser }) => {
         axios.post( "/api/users/signup", {...formInput, email: formInput.email.toLowerCase})
             .then(res => {
                 setUser(res.data);
-                navigate("/calendar");
+                navigate("/meetings/events");
             })
             .catch(res => {
                 alert("Failed to signup.")

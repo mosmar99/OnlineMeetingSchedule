@@ -22,6 +22,22 @@ async function createMeeting(req, res) {
     }
 }
 
+// Get all meetings with details
+async function getMeetingsDetailed(req, res) {
+  try {
+    let meetings = await Meeting.find({}).sort({ createdAt: -1 });
+
+    for (let i = 0; i < meetings.length; i++) {
+      if (meetings[i].organizer)
+        meetings[i].organizer = await User.findById(meetings[i].organizer);
+    }
+
+    res.status(200).json(meetings);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
 
 // Get all meetings
 async function getMeetings(req, res) {
@@ -152,6 +168,7 @@ async function getPendingMeetings(req, res) {
 module.exports = {
     createMeeting,
     getMeetings,
+    getMeetingsDetailed,
     getMeetingById,
     updateMeeting,
     deleteMeeting,

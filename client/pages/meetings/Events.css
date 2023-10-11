@@ -76,6 +76,10 @@
     border-radius: 0 0 8px 8px;
 }
 
+.events-list-item:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
 .events-list-item > span {
     font-family: var(--helvetica);
 }
@@ -83,6 +87,11 @@
 .events-list-item > span:first-child {
     font-family: var(--lora); 
     font-size: 18px;
+    cursor: pointer;
+}
+
+.events-list-item > span:first-child:hover {
+    color: #5A6AFF;
 }
 
 #events-none-found {
