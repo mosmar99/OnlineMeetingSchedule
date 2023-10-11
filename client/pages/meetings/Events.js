@@ -97,7 +97,7 @@ if (isPending) {
                             <span>Host</span>
                         </div>
                         {events.map(event => (
-                            <div className="events-list-item" key={event.title}> 
+                            <div className="events-list-item" key={event._id}> 
                                 <span onClick={() => setInfoModal(event)}>{event.title}</span>
                                 <span>N/A</span>
                                 <span>N/A</span>
