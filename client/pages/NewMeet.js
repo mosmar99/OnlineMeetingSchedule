@@ -11,21 +11,20 @@ import useFetch  from "../utils/useFetch";
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 
-
-
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const NewMeet = () => {
-    const navigate = useNavigate();
 
-    const [title, setTitle] = useState("");
-    const [desc, setDesc]   = useState("");
+    const [nmtitle, setTitle] = useState("");
+    const [nmdesc, setDesc]   = useState("");
     const [place, setPlace] = useState("");
 
     const [open, setOpen] = useState(false);
 
     const [timeList, setTimeList] = useState([{time: [dayjs(),dayjs()]}]);
+
+    const [participantList, setParticipantList] = useState([]);
 
     const {data, isPending, error} = useFetch("http://localhost:3000/api/users/list");
 
@@ -49,25 +48,68 @@ const NewMeet = () => {
     const handleSubmit = e => {
         e.preventDefault();
 
-        let data = {title, desc, place};
+        let cookie = document.cookie;
+        let nmorganizer = cookie.slice(cookie.indexOf("_id"),cookie.indexOf("username"));
+        nmorganizer = nmorganizer.slice(nmorganizer.indexOf("%3A%22")+6, nmorganizer.indexOf("%22%2C"));
 
-        for (let idx = 0; idx < timeList.length; idx++){
-            let times = {startDate: timeList[idx][0].toDate(), endDate: timeList[idx][1].toDate()};
-            let meeting_info = {...data, ...times};
+        let nmparticipants = [];
 
-            console.log(meeting_info);
+        for (let i = 0; i < participantList.length; i++){
+            nmparticipants[i] = participantList[i]._id;
+        }
 
-            axios.post("/api/meetings/", meeting_info)
-                .then(res => {
-                    navigate("/calendar");
+
+        const times = {
+            startTime: '',
+            endTime: ''
+        }
+
+        let nmtimeSlots = []
+        let nminvites = []
+        
+        for (let i = 0; i < timeList.length; i++){
+            times.startTime = JSON.stringify(timeList[i][0]);
+            times.endTime = JSON.stringify(timeList[i][1]);
+            axios.post("/api/timeSlots", times)
+                .then(res=>{
+                    for (let y = 0; y < nmparticipants.length; y++){
+                        const invite = {
+                            participant: nmparticipants[y],
+                            timeSlot: res.data._id,
+                            vote: "maybe"
+                        }
+                        axios.post("/api/invites", invite).then(res=>{
+                            nminvites.push(res.data._id);
+                        })
+                    }
+                    nmtimeSlots.push(res.data._id);
                 })
-                .catch(res => {
-                    alert("Failed to add meeting.")
+        }
+
+        let p = new Promise(resolve => {
+            setTimeout(() => {
+                console.log(nmtimeSlots);
+                console.log(nminvites);
+                const meeting = {
+                    organizer: nmorganizer,
+                    participants: nmparticipants,
+                    title: nmtitle,
+                    description: nmdesc,
+                    timeSlots: nmtimeSlots,
+                    invites: nminvites
+                }
+        
+                console.log(meeting);
+        
+                axios.post("/api/meetings/", meeting)
+                .then( res =>{
+
                 })
-            }
+            },100);
+            resolve(nmtimeSlots);
+        });
     }
 
-    //<h1 id="newMeet-h1">Add a new meeting</h1>
 
     return ( 
         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -83,13 +125,14 @@ const NewMeet = () => {
                             <form onSubmit={handleSubmit}>
 
                                 {/*INFORMATION ABOUT MEETING*/}
-                                <TextField id="newMeet-title" variant="outlined" label="Title" required margin="dense" fullWidth={true}  value={title} onChange={e => setTitle(e.target.value)}></TextField>
-                                <TextField id="newMeet-description" variant="outlined" label="Description" required margin="dense" fullWidth={true}   value={desc} onChange={e => setDesc(e.target.value)}></TextField>
+                                <TextField id="newMeet-title" variant="outlined" label="Title" required margin="dense" fullWidth={true}  value={nmtitle} onChange={e => setTitle(e.target.value)}></TextField>
+                                <TextField id="newMeet-description" variant="outlined" label="Description" required margin="dense" fullWidth={true}   value={nmdesc} onChange={e => setDesc(e.target.value)}></TextField>
                                 <TextField id="newMeet-place" variant="outlined" label="Place" required margin="dense" fullWidth={true}   value={place} onChange={e => setPlace(e.target.value)}></TextField>
 
                                 {/*ADD USERS TO MEETING*/}
                                 {users != null &&
                                     <Autocomplete
+                                        onChange={(event, value) => setParticipantList(value)}
                                         sx={{marginTop: 1}}
                                         fullWidth={true}
                                         multiple
