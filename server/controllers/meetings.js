@@ -1,7 +1,8 @@
 const Meeting = require('../models/meetings');
-const User = require("../models/users");
-const { invitesByParticipantId } = require('./invites.js'); 
+const User = require("../models/users"); 
+const Invite = require("../models/invites")
 const mongoose = require('mongoose');
+const { ObjectId } = require('mongodb');
 
 // Create a new meeting
 async function createMeeting(req, res) {
@@ -150,16 +151,28 @@ async function findMeetingsBasedOnTimeSlots(timeSlots) {
 // Function to find meetings with filtered time slots
 async function getPendingMeetings(req, res) {
   try {
+    const userId = new ObjectId(req.query.userId);
 
-    const userId = req.params.userId;
-
-    const invites = await invitesByParticipantId(userId);
+    const invites = await Invite.find({ participant: userId });
 
     const maybeTimeSlots = getMaybeTimeSlots(invites);
 
     const matchingMeetings = await findMeetingsBasedOnTimeSlots(maybeTimeSlots);
 
     res.json(matchingMeetings);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error finding meetings with filtered time slots' });
+  }
+}
+
+async function getHostedMeetings(req, res) {
+  try {
+    const userId = req.query.userId;
+    
+    const meetings = await Meeting.find({ organizer: new ObjectId(userId) });
+
+    res.json(meetings);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error finding meetings with filtered time slots' });
@@ -173,5 +186,6 @@ module.exports = {
     getMeetingById,
     updateMeeting,
     deleteMeeting,
-    getPendingMeetings
+    getPendingMeetings,
+    getHostedMeetings
 }

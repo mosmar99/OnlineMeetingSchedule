@@ -36,7 +36,7 @@ export const App = () => {
                         <Route path='/about' element={<About />} />
                         
                         {/* Meetings */}
-                        <Route path='/meetings/events' element={cookies.user ? <Events/> : <Navigate to="/login"/>}/>
+                        <Route path='/meetings/events' element={cookies.user ? <Events user={cookies.user} /> : <Navigate to="/login"/>}/>
                         <Route path='/meetings/calendar' element={cookies.user ? <Calendar/> : <Navigate to="/login"/>}/>
                         
                         {/* Authentication */}

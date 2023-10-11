@@ -15,53 +15,36 @@ const ChipButton = ({title, active, number, onClick}) => {
     );
 }
 
-function Events() {
+function Events({ user }) {
     const [view, setView] = useState("upcoming");
     const [infoModal, setInfoModal] = useState(null);
-    const [votes, setVotes] = useState([]);
-    const {data, isPending} = useFetch("/api/meetings/detailed");
+    const {data: pending, isPending: loadingPending} = useFetch("/api/meetings/pending", { userId: user._id });
+    const {data: hosted, isPending: loadingHosted} = useFetch("/api/meetings/hosted", { userId: user._id });
 
-    useEffect(() => {
-        // Fetch all votes for the participant
-        const participantId = "65187dc4516fb886c50363b0";
-        axios.get(`http://localhost:3000/api/invites/user/${participantId}`)
-          .then((response) => {
-            setVotes(response.data);
-          })
-          .catch((error) => {
-            console.error("Error fetching votes:", error);
-          });
-      }, []);
-
-if (isPending) {
-        return (
-            <div>
-                <MeetingsHeader activePage="events"/>
-            </div>
-        )
-    }
-
-    const meetings = data;
-
+    if (loadingPending || loadingHosted)
+        return <div><MeetingsHeader activePage="events"/></div>
 
     const views = [
         {
             name: "upcoming",
             title: "Upcoming",
-            events: meetings.filter(meeting => meeting.startDate !== undefined),
+            events: [],
         },
         {
             name: "pending",
             title: "Pending",
-            events: meetings.filter(meeting => meeting.startDate === undefined),
+            events: (pending !== undefined ? pending : []),
         },
         {
-            name: "past",
-            title: "Past",
-            events: [],
+            name: "hosted",
+            title: "Hosted",
+            events: (hosted !== undefined ? hosted : []),
         }
     ]
 
+    console.log("pending", pending)
+
+    // Set up current view
     const events = views.find(v => v.name === view).events;
 
     return (
@@ -118,11 +101,6 @@ if (isPending) {
             )}
         </div>
     )
-
-    // Function to handle voting for a timeslot
-    const handleVote = (vote) => {
-
-    };
 }
 
 export default Events;

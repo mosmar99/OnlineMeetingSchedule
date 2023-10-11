@@ -91,6 +91,8 @@ function NewMeetingModal({ onClose }) {
             },100);
             resolve(nmtimeSlots);
         });
+
+        onClose();
     }
 
     return (
