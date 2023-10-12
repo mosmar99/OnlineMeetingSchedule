@@ -6,6 +6,10 @@ const useFetch = (url, params) => {
     const [isPending, setIsPending] = useState(true);
     const [error, setError] = useState(null);
 
+    const [refreshTick, setRefreshTick] = useState(0);
+
+    const refresh = () => setRefreshTick(refreshTick+1);
+
     useEffect(() => {
         axios
             .get(url, { params: (params || {}) })
@@ -18,9 +22,9 @@ const useFetch = (url, params) => {
                 setIsPending(false);
                 setError(err.message);
             })
-    }, [url])
+    }, [url, refreshTick])
     
-    return {data, isPending, error};
+    return {data, isPending, error, refresh};
 }
 
 export default useFetch

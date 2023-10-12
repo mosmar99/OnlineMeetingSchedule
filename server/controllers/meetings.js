@@ -5,6 +5,18 @@ const TimeSlot = require("../models/timeSlots")
 const mongoose = require('mongoose');
 const { ObjectId } = require('mongodb');
 
+function formatDate(startTime, endTime) {
+  const startDate = startTime.replace(/"/g, '').split('T')[0];
+  const endDate = endTime.replace(/"/g, '').split('T')[0];
+  return `${startDate} to ${endDate}`;
+}
+
+function formatTime(startTime, endTime) {
+  const startHourMinute = startTime.split('T')[1].substring(0, 5);
+  const endHourMinute = endTime.split('T')[1].substring(0, 5);
+  return `${startHourMinute} to ${endHourMinute}`;
+}
+
 // Create a new meeting
 async function createMeeting(req, res) {
     const { organizer, participants, title, description, timeSlots, invites } = req.body;
@@ -77,6 +89,47 @@ async function getMeetingById(req, res) {
   }
 }
 
+async function getMeetingByIdDetailed(req, res) {
+  const id = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    res.status(404).json({ message: 'Meeting not found' });
+    return;
+  }
+
+  try {
+    const meeting = await Meeting.findById(id);
+
+    if (!meeting) {
+      res.status(404).json({ message: 'Meeting not found' });
+      return;
+    }
+
+    let response = {
+      _id: meeting._id,
+      title: meeting.title,
+      description: meeting.description,
+      organizer: await User.findOne({ _id: meeting.organizer }),
+      participants: await Promise.all(meeting.participants.map(async (participant) => (await User.findOne({ _id: participant })))),
+      timeSlots: await Promise.all(meeting.timeSlots.map(async (timeSlot) => {
+        const timeslot = await TimeSlot.findOne({ _id: timeSlot });
+        const votes = await Invite.find({ timeSlot: timeSlot, vote: "yes"});
+
+        return { 
+          date: formatDate(timeslot.startTime, timeslot.endTime), 
+          time: formatTime(timeslot.startTime, timeslot.endTime),
+          votes: votes.length,
+          usersVoted: [...new Set(votes.map(vote => vote.participant))],
+          _id: timeslot._id
+        }
+      })),
+    }
+
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
 // Update a meeting by ID
 async function updateMeeting(req, res) {
   const id = req.params.id;
@@ -214,11 +267,36 @@ async function getDates(meetings) {
           meeting.timeSlots.map(async timeslotId => {
             const timeslot = await TimeSlot.findById(timeslotId);
             if (timeslot && timeslot.startTime && timeslot.endTime) {
-              const startDate = timeslot.startTime.replace(/"/g, '').split('T')[0];
-              const endDate = timeslot.endTime.replace(/"/g, '').split('T')[0];
-              return `${startDate} to ${endDate}`;
+              return formatDate(timeslot.startTime, timeslot.endTime)
             }
             return null;
+          })
+        );
+
+        const filteredMeetingTimeRanges = meetingTimeRanges.filter(timeRange => timeRange !== null);
+        if (filteredMeetingTimeRanges.length > 0) {
+          timeRanges.push(filteredMeetingTimeRanges);
+        }
+      }
+    }
+
+    return timeRanges;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Error getting time ranges for meetings');
+  }
+}
+
+async function getDateTimes(meetings) {
+  try {
+    const timeRanges = [];
+
+    for (const meeting of meetings) {
+      if (meeting.timeSlots && Array.isArray(meeting.timeSlots)) {
+        const meetingTimeRanges = await Promise.all(
+          meeting.timeSlots.map(async timeslotId => {
+            const timeslot = await TimeSlot.findById(timeslotId);
+            return [timeslot.startTime, timeslot.endTime];
           })
         );
 
@@ -246,9 +324,7 @@ async function getTimes(meetings) {
           meeting.timeSlots.map(async timeslotId => {
             const timeslot = await TimeSlot.findById(timeslotId);
             if (timeslot && timeslot.startTime && timeslot.endTime) {
-              const startHourMinute = timeslot.startTime.split('T')[1].substring(0, 5);
-              const endHourMinute = timeslot.endTime.split('T')[1].substring(0, 5);
-              return `${startHourMinute} to ${endHourMinute}`;
+              return formatTime(timeslot.startTime, timeslot.endTime)
             }
             return null;
           })
@@ -341,6 +417,7 @@ async function getUpcomingMeetings(req, res) {
           count++;
         }
       }
+
       if (count === meeting.participants.length && count !== 0) {
         upcomingMeetings.push(meeting);
       }
@@ -357,21 +434,59 @@ async function getUpcomingMeetings(req, res) {
     }
 
     const meeting_ids = upcomingMeetings.map(meeting => meeting._id.toString());
+    const descriptions = await getDescriptions(upcomingMeetings);
     const usernames = await getNames(upcomingMeetings);
     const titles = await getTitles(upcomingMeetings);
     const dates = await getDates(upcomingMeetings);
     const times = await getTimes(upcomingMeetings);
+    const participants = await getParticipants(upcomingMeetings);
+
+    const dateTimes = await getDateTimes(upcomingMeetings)
 
     res.json({
       meeting_ids,
+      descriptions,
       usernames,
+      participants,
       titles,
       dates,
+      startTime: dateTimes.map(dateTime => dateTime[0][0]),
+      endTime: dateTimes.map(dateTime => dateTime[0][1]),
       times
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error finding meetings with filtered time slots' });
+  }
+}
+
+async function voteOnTimeSlot(req, res) {
+  try {
+    const { meeting_id, userId, timeSlotId } = req.body.params;
+
+    const recieved_meeting = await Meeting.findById(meeting_id);
+
+    console.log(recieved_meeting, meeting_id, userId, timeSlotId)
+
+    for (const invite of recieved_meeting.invites) {
+      const inviteObj = await Invite.findOne({ _id: invite });
+      
+      if (inviteObj.participant.toString() === userId.toString() && inviteObj.timeSlot.toString() === timeSlotId.toString()) {
+        // add vote to timeslot condition
+        inviteObj.vote = 'yes';
+      }
+      else if (inviteObj.participant.toString() === userId.toString() && inviteObj.timeSlot.toString() !== timeSlotId.toString()) {
+        // other timeslots should equal no
+        inviteObj.vote = 'no';
+      }
+
+      inviteObj.save();
+    }
+
+    res.status(200).json({ message: 'Vote updated' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error updating votes' });
   }
 }
 
@@ -385,4 +500,6 @@ module.exports = {
     getPendingMeetings,
     getHostedMeetings,
     getUpcomingMeetings,
+    voteOnTimeSlot,
+    getMeetingByIdDetailed
 }

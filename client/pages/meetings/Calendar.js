@@ -2,6 +2,7 @@ import "./Calendar.css";
 import useFetch from "../../utils/useFetch";
 import { useState } from 'react';
 import MeetingsHeader from "../../components/MeetingsHeader";
+import transposeEvents from "../../utils/transposeEvents";
 
 const dayNames = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 const monthNames = ["January", "Feburary", "Mars", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
@@ -32,16 +33,23 @@ const getVisualMonth = selectedMonth => {
     return datesArray;
 }
 
-const Calendar = () => {
-    let {data, isPending, error} = useFetch("http://localhost:3000/api/meetings");
+const Calendar = ({ user }) => {
+    let {data, isPending} = useFetch("/api/meetings/upcoming", { userId: user._id });
     const [viewedMonth, setViewedMonth] = useState(new Date());
 
     if (isPending)
         return <MeetingsHeader activePage="calendar" />
 
-    if (!data) data = []
+    data = transposeEvents(data);
 
-    const meetings = data.map(item => ({...item, startDate: new Date(item.startDate), endDate: new Date(item.endDate)}))
+    console.log(data)
+
+    const meetings = data.map(item => ({
+        ...item, 
+        startDate: new Date(Date.parse(item.startTime.slice(1, -1))), 
+        endDate: new Date(Date.parse(item.endTime.slice(1, -1)))
+    }))
+
     const visualMonth = getVisualMonth(viewedMonth);
 
     const nextMonth = () => {
@@ -59,6 +67,8 @@ const Calendar = () => {
     let weeks = [];
     for (let i = 0; i < visualMonth.length; i += 7)
         weeks.push(visualMonth.slice(i, i + 7));
+
+    console.log(meetings)
 
     return ( 
         <div>
@@ -107,7 +117,7 @@ const Calendar = () => {
                                             <div className={isToday ? "calendar-active-day-marker" : "calendar-day-marker"}>
                                                 <span style={extraStyle}>{date.getDate()}</span>
                                             </div>
-                                            {meetingsToday.map(meeting => <p key={meeting.title}>{meeting.title}</p>)}
+                                            {meetingsToday.map(meeting => <li key={meeting.titles} style={{ margin: "0 0 0 14px" }}>{meeting.titles}</li>)}
                                         </div>
                                     )
                                 })}

@@ -3,13 +3,14 @@ import { useState,  } from "react";
 import useFetch from "../../utils/useFetch";
 import MeetingsHeader from "../../components/MeetingsHeader";
 import MeetingInfoModal from "../../components/MeetingInfo";
-import MeetingVoteModal from "../../components/MeetingVote";
 import { Fragment } from "react";
 import axios from "axios";
 import {Menu, MenuItem} from "@mui/material";
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import EditMeetingModal from "../../components/EditMeeting";
+import { Navigate } from "react-router-dom";
+import transposeEvents from "../../utils/transposeEvents";
 
 
 const ChipButton = ({title, active, number, onClick}) => {
@@ -26,33 +27,24 @@ function Events({ user }) {
     const [infoModal, setInfoModal] = useState(null);
     const [editModal, setEditModal] = useState(null);
     const [voteModal, setVoteModal] = useState(null);
-    const {data: pending, isPending: loadingPending} = useFetch("/api/meetings/pending", { userId: user._id });
-    const {data: hosted, isPending: loadingHosted} = useFetch("/api/meetings/hosted", { userId: user._id });
+    const {data: pending, isPending: loadingPending, refresh: refreshPending} = useFetch("/api/meetings/pending", { userId: user._id });
+    const {data: hosted, isPending: loadingHosted, refresh: refreshHosted} = useFetch("/api/meetings/hosted", { userId: user._id });
+    const {data: upcoming, isPending: loadingUpcoming, refresh: refreshUpcoming} = useFetch("/api/meetings/upcoming", { userId: user._id });
 
-    if (loadingPending || loadingHosted)
+    if (loadingPending || loadingHosted || loadingUpcoming)
         return <div><MeetingsHeader activePage="events"/></div>
 
-    // Transpose received data into a common object form.
-    const transposeEvents = events => {
-        const transposedEvents = []
-
-        Object.keys(events).map(key => {
-            for (let i = 0; i < events[key].length; i++) {
-                if (transposedEvents[i] === undefined) transposedEvents[i] = {};
-                transposedEvents[i][key] = events[key][i];
-            }
-        })
-
-        return transposedEvents;
+    const refresh = () => {
+        refreshHosted();
+        refreshPending();
+        refreshUpcoming();
     }
-
-    console.log(hosted)
     
     const views = [
         {
             name: "upcoming",
             title: "Upcoming",
-            events: []
+            events: upcoming ? transposeEvents(upcoming) : [],
         },
         {
             name: "pending",
@@ -68,11 +60,6 @@ function Events({ user }) {
     
     // Set up current view.
     const activeView = views.find(v => v.name === view);
-
-    // Set up current view
-    const events = views.find(v => v.name === view).events;
-    console.log(activeView.events)
-
 
     return (
         <div>
@@ -180,10 +167,10 @@ function Events({ user }) {
                 <MeetingInfoModal {...infoModal} onExit={() => setInfoModal(null)}/>
             )}
             {editModal &&(
-                <EditMeetingModal {...editModal} onExit={() => setEditModal(null)}></EditMeetingModal>
+                <EditMeetingModal {...editModal} onExit={() => setEditModal(null)} refresh={refresh}/>
             )}
             {voteModal && (
-                <MeetingVoteModal {...voteModal} onExit={() => setVoteModal(null)}/>
+                <Navigate to={"/meetings/vote/"+voteModal.meeting_ids} />
             )}
         </div>
     )
