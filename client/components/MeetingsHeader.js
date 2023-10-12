@@ -8,7 +8,7 @@ const pages = {
     calendar: "Calendar"
 }
 
-function MeetingsHeader({ activePage }) {
+function MeetingsHeader({ activePage , user }) {
     const [modal, setModal] = useState(false);
 
     return (
@@ -32,7 +32,7 @@ function MeetingsHeader({ activePage }) {
                     </div>
                 </div>
             </div>
-            {modal && <NewMeetingModal onClose={() => setModal(false)}/>}
+            {modal && <NewMeetingModal onClose={() => setModal(false)} user={user}/>}
         </Fragment>
     );
 }
