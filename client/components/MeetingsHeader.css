@@ -1,7 +1,8 @@
 #meetings-header {
     display: flex;
     justify-content: center;
-    background-color: #FFFFFF;
+    background-color: #F5F5F5;
+    border-bottom: 1px solid #BFBFBF;
     height: 125px;
 }
 

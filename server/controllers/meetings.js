@@ -466,8 +466,6 @@ async function voteOnTimeSlot(req, res) {
 
     const recieved_meeting = await Meeting.findById(meeting_id);
 
-    console.log(recieved_meeting, meeting_id, userId, timeSlotId)
-
     for (const invite of recieved_meeting.invites) {
       const inviteObj = await Invite.findOne({ _id: invite });
       
