@@ -12,7 +12,6 @@ async function signup(req, res) {
         }
         
         let password = await bcrypt.hash(req.body.password, 10);
-        let userData = {...req.body}
         const newUser = new User({...req.body, password: password});
 
         // Save to DB
@@ -33,6 +32,7 @@ async function login(req, res) {
         }
 
         let valid = await bcrypt.compare(req.body.password, user.password)
+        
         if (valid) {
             res.json(user);
         } else {
