@@ -389,7 +389,7 @@ async function getHostedMeetings(req, res) {
   try {
     const userId = req.query.userId;
     const meetings = await Meeting.find({ organizer: new ObjectId(userId) });
-    
+
     const meeting_ids = meetings.map(meeting => meeting._id.toString());
     const usernames = await getNames(meetings);
     const descriptions = await getDescriptions(meetings);
@@ -422,15 +422,18 @@ async function getUpcomingMeetings(req, res) {
 
     for (const meeting of meetings) {
       count = 0;
-      for (const invite of meeting.invites) {
+      for (const invite of [... new Set(meeting.invites)]) {
         const inviteObj = await Invite.findById(invite);
+        console.log(inviteObj);
         if (inviteObj && inviteObj.vote === 'yes') {
           count++;
         }
       }
       
-      if (count === meeting.participants.length && count !== 0) {
+      console.log(meeting.title ,count, meeting.participants.length)
+      if (count >= meeting.participants.length && count !== 0) {
         upcomingMeetings.push(meeting);
+        console.log(meeting);
       }
       count = 0;
     }
