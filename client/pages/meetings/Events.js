@@ -100,32 +100,7 @@ function Events({ user }) {
                             <span>Host</span>
                         </div>
                         {activeView.events.filter(event => event.dates).map(event => (
-                            <div className="events-list-item" key={event._id}> 
-                                <div className="events-list-item-dots">
-                                    <PopupState variant="popover" popupId="demo-popup-menu">
-                                        {(popupState) => (
-                                            <Fragment>
-                                                <MoreHorizIcon {...bindTrigger(popupState)}></MoreHorizIcon>
-                                                <Menu {...bindMenu(popupState)}>
-                                                    <MenuItem onClick={() => {popupState.close();
-                                                        console.log(event);
-                                                        setInfoModal(event);
-                                                    }} name="info">Info</MenuItem>
-                                                    {activeView.name === "hosted" &&
-                                                        <MenuItem onClick={() => {popupState.close();
-                                                            setEditModal(event);
-                                                        }} name="edit">Edit</MenuItem>
-                                                    }
-                                                    {activeView.name === "hosted" &&
-                                                        <MenuItem onClick={() => {popupState.close();
-                                                            axios.delete("/api/meetings/"+event.meeting_ids);
-                                                        }} name="delete">Delete</MenuItem>
-                                                    }
-                                                </Menu>
-                                            </Fragment>
-                                        )}
-                                    </PopupState> 
-                                </div>                                       
+                            <div className="events-list-item" key={event._id}>                                      
                                 <span onClick={() => {
                                     if (activeView.name === "pending") setVoteModal(event)
                                     else setInfoModal(event)
@@ -152,6 +127,31 @@ function Events({ user }) {
                                     </Fragment>
                                 )} 
                                 <span>{event.usernames}</span>
+                                <div className="events-list-item-dots">
+                                    <PopupState variant="popover" popupId="demo-popup-menu">
+                                        {(popupState) => (
+                                            <Fragment>
+                                                <MoreHorizIcon {...bindTrigger(popupState)}></MoreHorizIcon>
+                                                <Menu {...bindMenu(popupState)}>
+                                                    <MenuItem onClick={() => {popupState.close();
+                                                        console.log(event);
+                                                        setInfoModal(event);
+                                                    }} name="info">Info</MenuItem>
+                                                    {activeView.name === "hosted" &&
+                                                        <MenuItem onClick={() => {popupState.close();
+                                                            setEditModal(event);
+                                                        }} name="edit">Edit</MenuItem>
+                                                    }
+                                                    {activeView.name === "hosted" &&
+                                                        <MenuItem onClick={() => {popupState.close();
+                                                            axios.delete("/api/meetings/"+event.meeting_ids);
+                                                        }} name="delete">Delete</MenuItem>
+                                                    }
+                                                </Menu>
+                                            </Fragment>
+                                        )}
+                                    </PopupState> 
+                                </div>  
                             </div>
                         ))}
                         {!activeView.events.length && (
