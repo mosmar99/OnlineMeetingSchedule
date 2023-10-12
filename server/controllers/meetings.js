@@ -429,11 +429,9 @@ async function getUpcomingMeetings(req, res) {
         }
       }
       
-      console.log(meeting.title ,count, meeting.participants.length)
       if (count >= meeting.participants.length && count !== 0) {
         upcomingMeetings.push(meeting);
       }
-      count = 0;
     }
     
     const userId = req.query.userId;
