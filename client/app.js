@@ -17,6 +17,7 @@ import ProfilePage from "./pages/ProfilePage";
 import Header from "./components/Header";
 import Features from "./components/Features";
 import NotFound from "./components/NotFound";
+import MeetingVote from "./pages/meetings/Vote";
 
 export const App = () => {
     const [cookies, setCookies, removeCookies] = useCookies(["user"])
@@ -39,7 +40,8 @@ export const App = () => {
                         
                         {/* Meetings */}
                         <Route path='/meetings/events' element={cookies.user ? <Events user={cookies.user} /> : <Navigate to="/login"/>}/>
-                        <Route path='/meetings/calendar' element={cookies.user ? <Calendar/> : <Navigate to="/login"/>}/>
+                        <Route path='/meetings/calendar' element={cookies.user ? <Calendar user={cookies.user}/> : <Navigate to="/login"/>}/>
+                        <Route path='/meetings/vote/:id' element={cookies.user ? <MeetingVote user={cookies.user} /> : <Navigate to="/login"/>}/>
                         
                         {/* Authentication */}
                         <Route path='/login' element={cookies.user ? <Navigate to="/calendar"/> : <Login setUser={setUser}/>}/>

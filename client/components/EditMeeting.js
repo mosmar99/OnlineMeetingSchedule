@@ -113,10 +113,10 @@ function EditMeetingModal({title, description, date, time, organizer, participan
         }
 
         return (
-            <div id="meeting-info-modal">
-                <div id="meeting-info-modal-top">
+            <div id="meeting-edit-modal">
+                <div id="meeting-edit-modal-top">
                     <h3>edit-{title}</h3>
-                    <div onClick={onExit} id="meeting-info-modal-close">
+                    <div onClick={onExit} id="meeting-edit-modal-close">
                         <svg width="23" height="24" viewBox="0 0 23 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M1 1.77979L20.5398 21.971" stroke="#272727" stroke-width="2" stroke-linecap="round"/>
                             <path d="M21.1704 2.33954L1.30223 22.2077" stroke="#272727" stroke-width="2" stroke-linecap="round"/>
