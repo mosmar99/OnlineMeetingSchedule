@@ -72,7 +72,7 @@ const Calendar = ({ user }) => {
 
     return ( 
         <div>
-            <MeetingsHeader activePage="calendar" />
+            <MeetingsHeader activePage="calendar" user={user}/>
             <div style={{ display: "flex", justifyContent: "center", marginBottom: "50px"}}>
                 <div style={{width: "1000px"}}>
 
