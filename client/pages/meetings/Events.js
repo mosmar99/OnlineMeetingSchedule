@@ -63,7 +63,7 @@ function Events({ user }) {
 
     return (
         <div>
-            <MeetingsHeader activePage="events"/>
+            <MeetingsHeader activePage="events" user={user}/>
             <div style={{ display: "flex", justifyContent: "center", marginBottom: "50px" }}>
                 <div style={{ width: "1000px" }}>
                     <div id="events-controls">

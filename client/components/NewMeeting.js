@@ -13,7 +13,7 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-function NewMeetingModal({ onClose }) {
+function NewMeetingModal({ onClose , user }) {
     const [nmtitle, setTitle] = useState("");
     const [nmdesc, setDesc]   = useState("");
 
@@ -21,9 +21,13 @@ function NewMeetingModal({ onClose }) {
 
     const [participantList, setParticipantList] = useState([]);
 
-    const {data} = useFetch("http://localhost:3000/api/users/list");
+    const {data, isPending} = useFetch("http://localhost:3000/api/users/list");
 
-    const userData = [data];
+    let userData = [data];
+
+    if (!isPending) {
+        userData = [data.filter((dataUser) => {return dataUser._id != user._id})];
+    }
     const users = userData[0];
 
     const handleTimeAdd = () => setTimeList([...timeList, [dayjs(), dayjs()]]);
