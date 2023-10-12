@@ -36,8 +36,8 @@ const SignUp = ({ setUser }) => {
         if (error) return;
 
         let postData = {
-            ...formInput
-            , email: formInput.email.toLowerCase()
+            ...formInput,
+            email: formInput.email.toLowerCase()
         }
 
         axios.post( "/api/users/signup", postData)
@@ -86,6 +86,20 @@ const SignUp = ({ setUser }) => {
                         onChange={handleChange}
                         value={formInput.username}
                         error={usernameError}
+                    />
+                    <TextField
+                        name="firstName"
+                        variant="outlined"  
+                        label="First name"
+                        onChange={handleChange}
+                        value={formInput.firstName}
+                    />
+                    <TextField
+                        name="lastName"
+                        variant="outlined"  
+                        label="Last name"
+                        onChange={handleChange}
+                        value={formInput.lastName}
                     />
                     <TextField
                         name="email"
@@ -142,20 +156,6 @@ const SignUp = ({ setUser }) => {
                         onChange={e => setPassword2(e.target.value)}
                         value={password2}
                         error={passwordError}
-                    />
-                    <TextField
-                        name="firstName"
-                        variant="outlined"  
-                        label="First name"
-                        onChange={handleChange}
-                        value={formInput.firstName}
-                    />
-                    <TextField
-                        name="lastName"
-                        variant="outlined"  
-                        label="Last name"
-                        onChange={handleChange}
-                        value={formInput.lastName}
                     />
                 <Button variant='contained' onClick={handleSubmit}>Sign up</Button>
                 <Link fontSize={"20px"} to="/login" align="center">Already have an account? Sign in</Link>
