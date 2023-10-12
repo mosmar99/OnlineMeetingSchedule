@@ -27,11 +27,11 @@ const SignUp = ({ setUser }) => {
     const handleSubmit = e =>{
         e.preventDefault();
 
-        let error = (!formInput.username || !isValidEmail(formInput.email) || (!isValidPassword(formInput.password) || formInput.password !== password2))
+        let error = (!formInput.username || !isValidEmail(formInput.email) || (formInput.password !== password2))
 
         setUsernameError(!formInput.username);
         setEmailError(!isValidEmail(formInput.email));
-        setPasswordError(!isValidPassword(formInput.password) || formInput.password !== password2);
+        setPasswordError(formInput.password !== password2);
 
         if (error) return;
 

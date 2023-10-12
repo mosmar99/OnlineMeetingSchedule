@@ -28,10 +28,10 @@ async function login(req, res) {
     try {
         const user = await User.findOne({ email });
         if (!user) {
-            res.status(401).json({ message: "Invalid login info" });
+            return res.status(401).json({ message: "Invalid login info" });
         }
 
-        let valid = await bcrypt.compare(req.body.password, user.password)
+        let valid = await bcrypt.compare(password, user.password)
         
         if (valid) {
             res.json(user);
