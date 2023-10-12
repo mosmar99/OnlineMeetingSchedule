@@ -419,6 +419,7 @@ async function getUpcomingMeetings(req, res) {
 
     const upcomingMeetings = []; 
     const meetings = await Meeting.find();
+
     for (const meeting of meetings) {
       count = 0;
       for (const invite of meeting.invites) {
@@ -427,20 +428,20 @@ async function getUpcomingMeetings(req, res) {
           count++;
         }
       }
-
+      
+      console.log(count, meeting.participants.length, meeting.title);
       if (count === meeting.participants.length && count !== 0) {
         upcomingMeetings.push(meeting);
+        console.log("pushed");
       }
       count = 0;
     }
     
     const userId = req.query.userId;
     for ( const meeting of upcomingMeetings) {
-      for (const participant of meeting.participants) {
-        if (!(participant.toString() === userId.toString() || meeting.organizer.toString() === userId.toString())) {
+      if (!(meeting.participants.includes(userId) || meeting.organizer.toString() === userId.toString())) {
           upcomingMeetings.splice(upcomingMeetings.indexOf(meeting), 1);
         }
-      }
     }
 
     const meeting_ids = upcomingMeetings.map(meeting => meeting._id.toString());
