@@ -8,12 +8,12 @@
     margin-bottom: 5;
 }
 
-#meeting-edit-modal{
+.meeting-edit-modal{
     text-align: center;
     align-items: center;
 }
 
-#meeting-edit-modal > div > form > label{
+.meeting-edit-modal > div > form > label{
     display: block;
     float:left
 }

@@ -9,51 +9,42 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-function EditMeetingModal({title, description, date, time, organizer, participants,createdAt ,onExit}) {
-    // const allParticipants = [organizer, ...participants];
+function EditMeetingModal({meeting_ids, participants, onExit}) {
     
     const {data: pending, isPending: loadingPending} = useFetch("/api/users/list");
-    const {data: hosted, isPending: loadingHosted} = useFetch("/api/meetings");
+    const {data: hosted, isPending: loadingHosted} = useFetch("/api/meetings/"+meeting_ids);
 
     const [etitle, setTitle] = useState("");
     const [edesc, setDesc]   = useState("")
     const [participantList, setParticipantList] = useState([]);
 
+    // console.log(loadingPending);
+    // console.log(loadingHosted);
+
     if (!loadingPending && !loadingHosted){
 
         const userData = [pending];
         let users = userData[0];
-        console.log("UASS " +users);
-        const meetingsData = [hosted];
-        const meetings = meetingsData[0];
-
+        const organizer = hosted.organizer;
         const organizerInfo = users.find(o => o._id === organizer);
-        console.log("ORGANIZER " + organizer);
-        //const organizerUsername = organizerInfo.username;
+
+        participants = hosted.participants;
+        // if(participantList.length === 0){
+        //     setParticipantList(participants);
+        // }
+        const title = hosted.title;
+        const description = hosted.description;
 
         //THE MEETING
-
-        let allMeetingsByUser = [];
-
-        for(let i = 0; i < meetings.length; i++){
-            if(meetings[i].organizer === organizer){
-                allMeetingsByUser.push(meetings[i]);
-            }
-        }
-
-        let selectedMeeting;
-
-        for(let i = 0; i < allMeetingsByUser.length; i++){
-            if(allMeetingsByUser[i].createdAt === createdAt){
-                selectedMeeting = allMeetingsByUser[i];
-            }
-        }
-
+        const organizerUsername = organizerInfo.username;
+        console.log(organizerInfo);
         for(let i = 0; i < participants.length; i++){
-            let temp = users.find(o => o._id == participants[i]);
-            if(temp != undefined){
-                let idx = users.indexOf(temp);
-                users.splice(idx, 1);
+            let temp = users.find(o => o.username == participants[i]);
+            if (temp !== organizerInfo){
+                if(temp !== undefined){
+                    let idx = users.indexOf(temp);
+                    users.splice(idx, 1);
+                }
             }
             
         }
@@ -75,33 +66,33 @@ function EditMeetingModal({title, description, date, time, organizer, participan
                 invites: null                
             }
 
-
-
-            for(let i = 0; i < selectedMeeting.timeSlots.length; i++){
-                etimeSlots.push(selectedMeeting.timeSlots[i]);
+            for(let i = 0; i < participantList.length; i++){
+                let usern = participantList[i]._id;
+                eParticipants.push(usern);
             }
 
-            for(let i = 0; i < selectedMeeting.invites.length; i++){
-                einvites.push(selectedMeeting.invites[i]);
+            for(let i = 0; i < hosted.timeSlots.length; i++){
+                etimeSlots.push(hosted.timeSlots[i]);
             }
-            
-            for(let i = 0; i < selectedMeeting.timeSlots.length; i++){
 
+            for(let i = 0; i < hosted.invites.length; i++){
+                einvites.push(hosted.invites[i]);
             }
+
             for(let i = 0; i < etimeSlots.length; i++){
                 for (let y = 0; y < eParticipants.length; y++){
                     const invite = {
-                        participant: eParticipants[y],
+                        participant: participantList[y],
                         timeSlot: etimeSlots[i],
                         vote: "maybe"
                     }
                     axios.post("/api/invites", invite).then(res => { einvites.push(res.data._id) })
                 }
             }
-    
+            console.log(einvites);
             let p = new Promise(resolve => {
                 setTimeout(() => {
-                    axios.delete("/api/meetings/"+selectedMeeting._id);
+                    axios.delete("/api/meetings/"+meeting_ids);
                     newMeeting.invites = einvites;
                     newMeeting.timeSlots = etimeSlots;
                     console.log(newMeeting);
@@ -113,10 +104,10 @@ function EditMeetingModal({title, description, date, time, organizer, participan
         }
 
         return (
-            <div id="meeting-edit-modal">
-                <div id="meeting-edit-modal-top">
+            <div id="meeting-info-modal" className="meeting-edit-modal">
+                <div id="meeting-info-modal-top" className="meeting-edit-modal-top">
                     <h3>edit-{title}</h3>
-                    <div onClick={onExit} id="meeting-edit-modal-close">
+                    <div onClick={onExit} id="meeting-info-modal-close">
                         <svg width="23" height="24" viewBox="0 0 23 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M1 1.77979L20.5398 21.971" stroke="#272727" stroke-width="2" stroke-linecap="round"/>
                             <path d="M21.1704 2.33954L1.30223 22.2077" stroke="#272727" stroke-width="2" stroke-linecap="round"/>
@@ -162,5 +153,4 @@ function EditMeetingModal({title, description, date, time, organizer, participan
         )
     }
 }
-// sx={{ margin: 2, marginBottom:6.5, bgcolor:'#4deb60', color:'#000000'}};
 export default EditMeetingModal;
