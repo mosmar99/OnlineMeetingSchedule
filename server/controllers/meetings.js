@@ -429,10 +429,8 @@ async function getUpcomingMeetings(req, res) {
         }
       }
       
-      console.log(count, meeting.participants.length, meeting.title);
       if (count === meeting.participants.length && count !== 0) {
         upcomingMeetings.push(meeting);
-        console.log("pushed");
       }
       count = 0;
     }
