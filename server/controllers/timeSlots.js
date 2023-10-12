@@ -83,10 +83,21 @@ async function deleteTimeSlot(req, res) {
   }
 }
 
+async function deleteAllTimeSlots(req, res) {
+  try {
+    await TimeSlot.deleteMany({});
+    res.json({ message: 'All time slots removed' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error removing time slots' });
+  }
+}
+
 module.exports = {
   createTimeSlot,
   getAllTimeSlots,
   getTimeSlotById,
   updateTimeSlot,
   deleteTimeSlot,
+  deleteAllTimeSlots,
 };

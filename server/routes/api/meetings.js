@@ -11,6 +11,7 @@ router.get('/detailed/', controller.getMeetingsDetailed);
 router.get('/detailed/:id', controller.getMeetingByIdDetailed);
 router.get('/:id', controller.getMeetingById);
 router.post('/', controller.createMeeting);
+router.delete('/all/', controller.deleteAllMeetings);
 router.delete('/:id', controller.deleteMeeting);
 router.patch('/:id', controller.updateMeeting);
 

@@ -55,8 +55,19 @@ async function list(req, res) {
     }
 }
 
+async function deleteAllUsers(req, res) {
+    try {
+      await User.deleteMany({});
+      res.json({ message: 'All users removed' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error removing users' });
+    }
+}
+
 module.exports = {
     signup,
     login,
-    list
+    list,
+    deleteAllUsers
 }

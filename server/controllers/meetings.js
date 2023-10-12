@@ -178,6 +178,16 @@ async function deleteMeeting(req, res) {
   }
 }
 
+async function deleteAllMeetings(req, res) {
+  try {
+    await Meeting.deleteMany({});
+    res.status(200).json({ message: 'All meetings deleted' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error deleting meetings' });
+  }
+}
+
 // Function to get filtered time slots
 function getMaybeTimeSlots(invites) {
   const maybeTimeSlots = [];
@@ -499,5 +509,6 @@ module.exports = {
     getHostedMeetings,
     getUpcomingMeetings,
     voteOnTimeSlot,
-    getMeetingByIdDetailed
+    getMeetingByIdDetailed,
+    deleteAllMeetings,
 }
