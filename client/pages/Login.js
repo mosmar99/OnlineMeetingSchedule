@@ -21,8 +21,8 @@ const Login = ({ setUser }) => {
         e.preventDefault();
 
         let postData = {
-            ...formInput
-            , email: formInput.email.toLowerCase()
+            ...formInput,
+            email: formInput.email.toLowerCase()
         }
 
         axios.post("/api/users/login", postData)
