@@ -8,16 +8,21 @@ const About = () => {
 
       <div className="about-content">
         <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, libero eget gravida viverra, velit odio hendrerit tortor,
-          quis volutpat orci elit id nunc. Sed sed turpis eget turpis cursus bibendum. Sed ultrices ultrices risus, at
-          bibendum elit ultricies a. Sed sodales, odio nec hendrerit facilisis, metus nunc bibendum massa, eu cursus tortor est ut justo.
+          Who are we? We are a group of students from the Jönköping University who are passionate about making the world a better place. 
+          But how do we do that? We do that by making your life easier. We do that by making your life more organized.
+          <strong> If you don't plan, you plan to fail</strong>. This is why we created Meetings. And who are we? 
         </p>
 
         <p>
-          Nulla facilisi. Sed non bibendum urna. Vivamus vestibulum, ligula in feugiat laoreet, augue neque vestibulum lorem, a eleifend
-          nunc mi et arcu. Integer vel ex vitae tellus dictum tincidunt. Nullam condimentum justo eu posuere fermentum. Vivamus eget
-          condimentum tellus. Integer vel tellus sit amet elit lacinia eleifend in sit amet tellus.
+          Are group of developers consists of <u>4 members</u>:
         </p>
+
+        <ul>
+          <li>ICE</li>
+          <li>Neobyte01</li>
+          <li>mosmar99</li>
+          <li>tuura01</li>
+        </ul>
       </div>
     </div>
   );
